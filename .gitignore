@@ -349,7 +349,6 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-Bin
 build
 Lib/TetGen.lib
 Lib/SUS.lib
