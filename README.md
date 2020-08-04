@@ -27,15 +27,12 @@ The libraries and softwares above need to be installed **manually**, please set 
 Our program takes a tetrahedral mesh (\*.vtk) and its feature edges (\*.fea) as input.  The feature file starts with the number of feature segments **n**, followed by **n** lines, where each line contains the two vertex indices of a feature edge segment. You can generate tetrahedral meshes from surface meshes using [TetGen](http://wias-berlin.de/software/index.jsp?id=TetGen&lang=1) or download our preprocessed data from: https://drive.google.com/open?id=1KUysv4rmUIX1F5nnHKHaek5UboeCclE8
 
 ### Installation & Usage
-First, clone this repository with its submodules:
+First, clone this repository:
 ```
-git clone https://github.com/guohaoxiang/CE-PolyCube.git --recurse-submodules
+git clone https://github.com/msraig/CE-PolyCube.git
 cd CE-PolyCube
 ```
-Apply patch changes:
-```
-sh ./apply_patch.sh
-```
+We provide both the source code and the compiled executable files(in ** Bin** folder).
 Run CMake:
 ```
 mkdir Build
