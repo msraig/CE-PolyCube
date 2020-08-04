@@ -51,11 +51,19 @@ There will be three new files in DATA_ROOT_PATH/sculpt folder:
 + sculpt_cut_flattening.vtk: the CE-PolyCube mesh.
 + sculpt_hex_opt.vtk: the final optimized all-hex mesh.
 
-### Cite(to do)
-+ Our paper
-+ SUS
-+ PolyCut
-+ HexEx
-
-### License(to do)
+### Cite
+```
+@article{Guo2020Cut,
+  title={Cut-enhanced PolyCube-Maps for Feature-aware All-Hex Meshing},
+  author={Guo, Hao-Xiang and Liu, Xiaohan and Yan, Dong-Ming and Yang, Liu},
+  journal={ACM Transactions on Graphics (TOG)},
+  volume={39},
+  number={4},
+  pages={106:1--106:14},
+  year={2020},
+  publisher={ACM New York, NY, USA}
+}
+```
+Please contact us (Haoxiang Guo ghx17@mails.tsinghua.edu.cn, Yang Liu yangliu@microsoft.com ) 
+if you have any problems about our implementation.  
 
