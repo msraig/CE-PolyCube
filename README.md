@@ -5,7 +5,7 @@ ACM Transactions on Graphics (SIGGRAPH2020).
 If you are interested in the algorithm details, please refer to our **[paper](https://app.box.com/s/e6nb0ert440zbul6i84gl28u060b027t)**.This program works on 64-bit windows.
 
 ### Prerequisite
-+ Boost (1.66 or later): https://sourceforge.net/projects/boost/files/boost-binaries/
++ [Boost](https://sourceforge.net/projects/boost/files/boost-binaries/) (1.66 or later)
 + CGAL (4.13 or later): https://www.cgal.org/releases.html
 + MOSEK 8: https://www.mosek.com/downloads/
 + PolyCut: http://www.cs.ubc.ca/labs/imager/tr/2018/HexDemo/, download and extract it to a folder, make sure the one-month license has not expired.
