@@ -1,0 +1,70 @@
+/**
+
+\page ovm_tutorial_04 Tutorial 04: Using File I/O
+
+The %OpenVolumeMesh library is equipped with a file manager class that
+allows reading polyhedral meshes from file as well as writing mesh objects
+to files. The format for these files is specified in Section \ref file_format.
+
+In this tutorial, we will learn how to use the file manager in order to
+permanently store mesh objects and read them.
+
+Consider the following code for an example on how to write a polyhedral mesh to a file:
+
+\code
+// Include the file manager header
+#include <OpenVolumeMesh/FileManager/FileManager.hh>
+
+// Include the polyhedral mesh header
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
+...
+
+void someFunction() {
+
+    // Create mesh object
+    OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
+
+    // Fill mesh with geometry
+    ...
+
+   // Create file manager object
+   OpenVolumeMesh::IO::FileManager fileManager;
+
+   // Store mesh to file "myMesh.ovm" in the current directory
+   fileManager.writeFile("myMesh.ovm", myMesh);
+}
+\endcode
+
+This works analogously for reading files into mesh objects. See the
+following code for an example.
+
+\code
+// Include the file manager header
+#include <OpenVolumeMesh/FileManager/FileManager.hh>
+
+// Include the polyhedral mesh header
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
+...
+
+void someFunction() {
+
+    // Create an empty mesh object
+    OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
+
+   // Create file manager object
+   OpenVolumeMesh::IO::FileManager fileManager;
+
+   // Read mesh from file "myMesh.ovm" in the current directory
+   fileManager.readFile("myMesh.ovm", myMesh);
+
+   // Now myMesh contains the mesh specified in file "myMesh.ovm"
+}
+\endcode
+
+Function OpenVolumeMesh::IO::FileManager::readFile() expects a total of four parameters,
+two of which are mandatory (file name and mesh reference). The other two parameters
+are optional flags that control whether bottom-up incidences should be computed automatically and
+whether a topology check should be performed when adding faces and cells.
+The two flags are turned on per default.
+
+**/

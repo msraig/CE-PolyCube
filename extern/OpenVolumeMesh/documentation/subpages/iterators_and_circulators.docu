@@ -1,0 +1,60 @@
+/**
+
+\page iterators_and_circulators Iterators and Circulators
+
+In order to iterate over the entities of a mesh or just a certain neighborhood (circulator)
+of an entity, %OpenVolumeMesh provides a set of iterators and circulators. These iterators
+are entirely STL-compatible and can as such be used in all algorithms of the C++ standard
+template library. We distinguish between two different kinds of iterators:
+
+\li \b Intrinsic \b Iterators: Iterators that do not require bottom-up incidences to
+    be computed.
+\li \b Bottom-Up \b Incidence \b Dependent \b Iterators: Iterators that need bottom-up
+    incidences to be computed before they can be used.
+
+For information on bottom-up incidences, refer to Section \ref concepts.
+Note since %OpenVolumeMesh is an index-based data structure, the iterators encapsulate
+\e handles to entities. Dereferencing an iterator thus never returns a reference to the
+entity itself but only a handle to the entity.
+
+The following sections provide a concise overview of the iterators that come along with
+%OpenVolumeMesh.
+
+\section intrinsic_iterators Intrinsic Iterators
+
+\li OpenVolumeMesh::VertexIter: 
+    Iterate over all vertices of a mesh.
+\li OpenVolumeMesh::EdgeIter:
+    Iterate over all edges of a mesh.
+\li OpenVolumeMesh::HalfEdgeIter:
+    Iterate over all half-edges of a mesh.
+\li OpenVolumeMesh::FaceIter:
+    Iterate over all faces of a mesh.
+\li OpenVolumeMesh::HalfFaceIter:
+    Iterate over all half-faces of a mesh.
+\li OpenVolumeMesh::CellIter:
+    Iterate over all cells of a mesh.
+\li OpenVolumeMesh::CellVertexIter:
+    Iterate over all vertices of a given cell.
+
+    
+\section incidence_depending_iterators Bottom-Up Incidence Dependent Iterators and Circulators
+
+\subsection general_iterators Iterators for General Polyhedral Meshes
+
+\li OpenVolumeMesh::BoundaryFaceIter: Iterate over all boundary faces of a mesh.
+\li OpenVolumeMesh::CellCellIter: Iterate over all adjacent cells of a given reference cell.
+\li OpenVolumeMesh::VertexOHalfEdgeIter: Iterate over all incident outgoing half-edges of a given vertex.
+\li OpenVolumeMesh::HalfEdgeHalfFaceIter: Iterate over all incident half-faces of a given half-edge.
+\li OpenVolumeMesh::VertexCellIter: Iterate over all incident cells of a given vertex.
+\li OpenVolumeMesh::HalfEdgeCellIter: Iterate over all incident cells of a given half-edge.
+
+\subsection hexahedral_mesh_iterators Specializations for Hexahedral Meshes
+
+\li OpenVolumeMesh::CellSheetCellIter: Iterate over all adjacent hexahedra in the same sheet of a given hexahedron. Also see \ref ovm_tutorial_02, last example.
+\li OpenVolumeMesh::HalfFaceSheetHalfFaceIter: Iterate over all adjacent half-faces of a given half-face in the same sheet of hexahedra.
+\li OpenVolumeMesh::OutsideNeighborHalfFaceIter: Iterate over all adjacent boundary half-faces (outside) of a given boundary half-face.
+
+\todo Make figures for all iterators.
+
+**/

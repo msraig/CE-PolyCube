@@ -1,0 +1,252 @@
+/**
+
+\page concepts Concepts of OpenVolumeMesh
+
+\section halfedges From Half-Edges to Half-Faces
+
+The concepts of %OpenVolumeMesh are closely related to those of %OpenMesh (http://www.openmesh.org).
+For further reading on the concepts of %OpenMesh, refer to \cite Botsch02OpenMesh.
+%OpenMesh is used to handle two-manifold geometric meshes. For this purpose, it distinguishes
+between \e vertices, \e edges, and \e faces. The main idea in %OpenMesh is to represent the
+edges as a pair of so-called half-edges that have opposing orientations. Additional local incidence
+information is stored for each half-edge such that the navigation on the mesh can be completely
+accomplished by using only these local links to adjacent structures (similar to e.g. a linked list).
+This, of course, assumes the surface mesh to be two-manifold.
+ 
+The main concept of %OpenVolumeMesh is slightly different but shares some of its ideas with
+%OpenMesh. In order to represent volumetric meshes (three-manifolds) that consist of a
+set of polyhedra, %OpenVolumeMesh extends the set of entities by \e cells.
+But unlike in the original idea of half-edge data structure,
+in %OpenVolumeMesh all entities are stored in arrays (STL vectors) rather than
+in incidence linked lists. This is why %OpenVolumeMesh is index-based which
+has the major advantage that the data structure can handle configurations that are
+not three-manifold (since this is desired in some applications).
+For example, a set of vertices or just a two-manifold surface can be respresented by
+%OpenVolumeMesh as well as an entirely three-manifold polyhedral mesh.
+In order to offer the possibility to locally navigate on the meshes, we carry over
+the idea of splitting edges into half-edges to the faces. This leads to the separation
+of the faces into pairs of so-called half-faces. Each of the half-faces has opposite
+orientation to its counter-part and can be either incident to a cell or not which
+makes the half-face a boundary half-face. The orientation of a half-face is uniquely determined
+by its incident half-edges. See Figure 1 for an illustration of this concept.
+
+\image html halfedge_halfface.png "Figure 1. Left: Two half-edges as in OpenMesh. Right: A face split into two half-faces."
+
+\section incidences Incidence Relations
+
+The entities in %OpenVolumeMesh are arranged hierarchically and we distinguish between
+two incidence relations:
+
+\li The (intrinsic) top-down incidences and
+\li the bottom-up incidences.
+
+\subsection top_down The Top-Down Incidence Relation
+
+Each entity of dimension n is defined as a tuple of entities of dimension n-1,
+except for the vertices. So, edges are defined as a pair of vertices, (half-)faces are defined as
+a j-tuple of (half-)edges, where j is the valence of the face, and cells are defined
+as a k-tuple of (half-)faces, where k is the valence of the cell. This incidence
+relation is intrinsically given by definition. %OpenVolumeMesh can use these
+incidences in order to provide \e top-down circulators, that is circulators
+that address all adjacent lower-dimensional entities of a given reference entity.
+Read more on iterators and circulators in Section \ref iterators_and_circulators. 
+Figure 2 illustrates this hierarchy.
+
+\image html volume_mesh_hierarchy.png "Figure 2. Each entity is defined as a tuple of lower-dimensional entities."
+
+\subsection bottom_up The Bottom-Up Incidence Relation
+
+In many cases, the incidence list to higher dimensional entities for a given entity is
+required. Therefore, %OpenVolumeMesh offers the opportunity to explicitly compute
+the so-called \e bottom-up incidences. For this, %OpenVolumeMesh stores the
+following information for the respective entity type in additional caches:
+
+\li \b Vertex: A list of all outgoing half-edges.
+\li \b Half-Edge: An (ordered) list of all incident half-faces.
+\li \b Half-Face: The handle to an incident cell or none if it is a boundary half-face.
+
+These incidence relations are computed automatically for each affected entity
+when adding/deleting it. In most cases these incidences are needed since many
+iterators/circulators rely on them. Storing this additional information consumes
+extra memory that scales linearly with the mesh's complexity.
+However, in case these incidence relations are not needed (e.g. in numerical analysis
+applications, etc.), they can be disabled by calling TopologyKernel::enable_bottom_up_incidences()
+and passing false as parameter. Also it is possible to enable bottom-up incidences
+for single entity types, just call the following functions:
+
+\li TopologyKernel::enable_vertex_bottom_up_incidences()
+\li TopologyKernel::enable_edge_bottom_up_incidences()
+\li TopologyKernel::enable_face_bottom_up_incidences()
+
+This is useful in cases where only a subset of these incidence relations is required
+while at the same time keeping the data structure as compact as possible
+allocating only a minimum of storage overhead.
+
+\note Note that most of the iterators and circulators rely on these incidence lists, so, many of them do not work if bottom-up incidences are disabled.
+
+\section modularity Modularity - Take only what you need
+
+There exist numerous applications for volumetric mesh data structures including
+mesh generation, finite element analysis, rendering, etc. Each of them focussing
+on different design goals such as maximum efficiency, compactness or
+comfortable navigation. Since our data structure claims to be versatile,
+it is designed to be as modular as possible such that it suits many of the
+mentioned application cases. Figure 3 shows the class diagram of the core components
+of %OpenVolumeMesh. With this architecture it is possible to only instanciate
+what is really needed in a particular use case. For instance, we make a clear distinction
+between the geometry and topology of a mesh, such that the choice of whether a mesh (graph) requires
+a geometric embedding or not is up to the user. This may save a lot of unnecessary memory
+overhead in cases where only topological information of a mesh is needed.
+The topology kernel implements only a minimal set of (intrinsic) operations on
+a mesh such as adding/deleting entities, computing incidence relations and instantiate
+iterator objects. All other additional functions are provided by the so-called attribute classes
+which are presented in the next section.
+
+\image html ovm_class_diagram.png "Figure 3. The class diagram of the OpenVolumeMesh core" width=600
+
+\section index_based Using handles to address the entities of a mesh
+
+%OpenVolumeMesh is an index-based data structure where generally all entities
+are stored in linear memory arrays (STL vectors). So, each of the entities
+is uniquely defined through its handle which is a simple class that encapsulates
+the index of it in the respective array it is stored in. This makes sure
+the entities can be accessed in \f$O(1)\f$. Each of the distinct entity
+types has its own type-safe handle class in order to avoid ambiguity when accessing
+elements at compile time. The handle classes are each derived from a common
+base class called OpenVolumeMesh::OpenVolumeMeshHandle. The iterators as well
+as the circulators are designed to return a handle to an entity on dereference
+rather than a reference to the entity itself. A special constant,
+OpenVolumeMesh::TopologyKernel::InvalidVertexHandle, etc., for each entity
+is used when trying to access non-existing entities.
+
+\section genericity Genericity
+
+\subsection generic_embedding Generic Embedding
+
+The %OpenVolumeMesh library is designed to be as generic as possible. So, at one hand,
+the developer can choose the vector space into which a mesh is embedded. For example,
+most instances require their vertices being elements of \f$\mathrm{R}^3\f$.
+But in some cases, one might want e.g. two-dimensional integer coordinates,
+so elements in \f$\mathrm{N}_0^2\f$. In %OpenVolumeMesh, the embedded vector
+type can be specified as template parameter. The library is shipped with a vector
+class that also specifies all necessary operations on vectors (such as dot- and cross-product,
+several norms, etc.). The most common vector types are predefined in VectorT.hh.
+So, let's say we want to create a polyhedral mesh whose vertices are elements of
+\f$\mathrm{N}_0^2\f$. We use the following code:
+
+\code
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
+#include <OpenVolumeMesh/Mesh/PolyhedralMesh.hh>
+
+void SomeClass::someFunction() {
+
+  ...
+
+  // Our two-dimensional integer vector class
+  typedef OpenVolumeMesh::Geometry::Vec2ui Vec2ui;
+
+  // Vec2ui stands for "two-dimensional vector of unsigned integers"
+
+  // Our mesh using Vec2ui as vector type
+  OpenVolumeMesh::GeometryKernel< Vec2ui > myMesh;
+
+  ...
+
+}
+\endcode
+
+\subsection generic_properties Generic Dynamic Properties
+
+Similar to the %OpenMesh data structure, it is possible to attach multiple dynamic properties
+to any of the entities in %OpenVolumeMesh at run-time. The underlying property container class makes
+use of C++ template programming concepts in order to allow the encapsulated property data
+to be of any data type. However, we have adapted and improved the property concept of OpenMesh
+such that the allocation of properties is now completely managed by a resource
+manager implemented in OpenVolumeMesh::ResourceManager. Properties are now allocated
+and returned as a shared pointer that automatically are destroyed and entirely released
+once they loose scope. This drastically improves the ease-of-use at one hand and
+demands less care about memory management at the other hand. Nevertheless, properties
+may also (in analogy to the property system of OpenMesh) be declared persistent.
+When declaring a property persistent, the ownership of the property memory is given back
+to the mesh (from the user context) which makes sure it is not destroyed before
+the mesh is. Let's assume, we want to attach a label to the vertices and
+some real valued weight to the edges of a mesh. Consider the following example code:
+
+\code
+#include <string>
+
+#include <OpenVolumeMesh/Geometry/VectorT.hh>
+#include <OpenVolumeMesh/PolyhedralMesh/PolyhedralMesh.hh>
+
+void SomeClass::someFunction {
+
+  ...
+
+  // Create mesh
+  typedef OpenVolumeMesh::Geometry::Vec3d Vec3d;
+  OpenVolumeMesh::GeometryKernel< Vec3d > myMesh;
+
+  // Fill mesh
+  ...
+
+  // Attach label property (data type std::string) to the mesh
+  OpenVolumeMesh::VertexPropertyT< std::string > label =
+  		myMesh.request_vertex_property< std::string >("LabelProperty");
+
+  // Fill property values
+  for(OpenVolumeMesh::VertexIter v_it = myMesh.vertices_begin();
+        v_it != myMesh.vertices_end(); ++v_it) {
+
+    // Assign same label to each vertex
+    label[*v_it] = "My Label";
+  }
+  
+  // Now, attach weight property (data type float) to the mesh
+  OpenVolumeMesh::EdgePropertyT< float > weight =
+  		myMesh.request_edge_property< float >(); // Also anonymous properties are supported
+
+  // Fill property values
+  for(OpenVolumeMesh::EdgeIter e_it = myMesh.edges_begin();
+        e_it != myMesh.edges_end(); ++e_it) {
+
+    // Assign same weight to each edge
+    weight[*e_it] = 3.14f;
+  }
+
+  // The properties are automatically released
+  // when leaving scope
+}
+\endcode
+
+\section attribs Using attributes to provide extra functionality
+
+Due to the fact that %OpenVolumeMesh is designed to be as compact as possible providing
+the opportunity to only use code that is really needed in a particular case, all extra
+functionality can be suspended to so-called attribute classes. In this context,
+attributes are not to be understood as those used in the C++ STL concepts.
+Attribute objects in %OpenVolumeMesh are objects instanciated at run-time which
+expect a mesh reference to be injected.
+Usually they request a certain set of properties from the mesh and provide
+functions that allow operating on these properties or the mesh itself.
+The major advantage of the use of these attributes is that they exclusively
+use additional memory during their life-time cycle. As soon as an attribute object
+looses scope and is thus destroyed, all allocated memory is automatically released again.
+The following lines of code show how to use attributes (in this case the
+status attribute providing functions for selecting, tagging and deleting
+entities):
+
+\code
+// Create mesh object
+GeometricPolyhedralMeshV3d myMesh;
+
+// Fill mesh with entities
+...
+
+// Create status attribute object
+StatusAttrib status(myMesh);
+
+// Select vertex with handle 0
+status[VertexHandle(0)].set_selected(true);
+\endcode
+
+**/

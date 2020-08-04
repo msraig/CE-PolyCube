@@ -1,0 +1,92 @@
+/**
+
+\page ovm_tutorial_02 Tutorial 02: Using Iterators
+
+%OpenVolumeMesh is shipped with a set of useful iterators and circulators to
+comfortably address the entities (local neighborhood of entities) in a polyhedral mesh.
+See Section \ref iterators_and_circulators for a more detailed description of all
+available iterators and circulators. In this tutorial, we examine how to use the iterators
+that come along with %OpenVolumeMesh.
+
+In the first example, we simply iterate over all half-edges of a mesh using
+the OpenVolumeMesh::HalfEdgeIter iterator class:
+
+\code
+// Instantiate e.g. a geometric hexahedral mesh
+OpenVolumeMesh::GeometricHexahedralMeshV3d myMesh;
+
+// Fill mesh with geometry
+...
+
+// Iterate over all half-edges
+for(OpenVolumeMesh::HalfEdgeIter he_it = myMesh.halfedges_begin();
+        he_it != myMesh.halfedges_end(); ++he_it) {
+
+    // Now dereferencing he_it returns a half-edge handle
+    ...
+}
+\endcode
+
+In the next example, we iterate over all incident outgoing half-edges of a given
+vertex. Note that this iterator needs bottom-up incidences which are
+computed automatically per default. Otherwise, the iterator would not be valid.
+See Section \ref bottom_up for information on the bottom-up incidences.
+
+\code
+// Instantiate a polyhedral mesh
+OpenVolumeMesh::GeometricPolyhedralMeshV3f myMesh;
+
+// Fill mesh with geometry
+...
+
+typedef OpenVolumeMesh::VertexHandle VertexHandle;
+
+// Get first vertex in mesh
+VertexHandle vh = *(myMesh.vertices_begin());
+
+// Iterate over all outgoing half-edges of vertex vh
+for(OpenVolumeMesh::VertexOHalfEdgeIter voh_it = myMesh.voh_iter(vh);
+        voh_it.valid(); ++voh_it) {
+
+    // Now dereferencing voh_it returns a half-edge handle
+    ...
+}
+\endcode
+
+In the last example, we create a hexahedral mesh and use its specialized OpenVolumeMesh::CellSheetCellIter
+iterator class. This iterator expects a cell handle as parameter and iterates over all adjacent cells
+in the same \e sheet. A sheet is, in the terms of the \e spatial \e twist \e continuum, short STC,
+a "layer" of hexahedra as illustrated in the following figure. For rurther reading on STC,
+refer to \cite MurdochSTC. The gray shaded hexahedra form
+a sheet, all other cells (except the outlines of the boundary cells) are invisible in this illustration.
+
+\image html sheet_illustration.png
+
+Starting from a hexahedron, we determine its virtual axis that is \e orthogonal to the desired sheet
+(note that there are always two opposing virtual axes that are orthogonal to such a sheet).
+We create our sheet iterator by passing the reference cell's handle as well as an orthogonal
+virtual axis with respect to that cell to the iterator's constructor. The iterators then
+iterates over all directly adjacent cells in the same sheet (those hexahedra that share a common
+face with the reference hexahedron). Consider the following code:
+
+\code
+// Instantiate a hexahedral mesh
+OpenVolumeMesh::GeometricHexahedralMeshV3d myMesh;
+
+// Fill mesh with geometry
+...
+
+// Get handle of first cell
+OpenVolumeMesh::CellHandle ch = *(myMesh.cells_begin());
+
+// Iterate over the hexahedra in the same sheet that are adjacent
+// to the reference hexahedron (cell handle ch)
+for(OpenVolumeMesh::CellSheetCellIter csc_it = myMesh.csc_iter(ch);
+        csc_it.valid(); ++csc_it) {
+
+    // Now dereferencing csc_it returns a cell handle
+    ...
+}
+\endcode
+
+**/

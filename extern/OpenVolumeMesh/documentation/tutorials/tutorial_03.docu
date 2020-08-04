@@ -1,0 +1,59 @@
+/**
+
+\page ovm_tutorial_03 Tutorial 03: Adding Properties
+
+In %OpenVolumeMesh it is possible to attach multiple properties to each of the entities.
+Due to the use of STL template programming, these properties can be of any data type.
+In this tutorial, we learn how to attach properties to the entities of a polyhedral mesh.
+
+Read Section \ref generic_properties for a detailed description of the property system.
+
+The following example shows how to attach a floating-point property to the vertices of a mesh.
+
+\code
+void someFunction() {
+
+    // Create mesh object
+    OpenVolumeMesh::GeometricPolyhedralMeshV3d myMesh;
+    
+    // Fill mesh with geometry
+    ...
+    
+    // Add property
+    OpenVolumeMesh::VertexPropertyT<float> floatProp =
+    		myMesh.request_vertex_property<float>("Vertex Weights");
+    
+    // Now, iterate over all vertices and set property value to some number
+    float val = 0.0f;
+    for(OpenVolumeMesh::VertexIter v_it = myMesh.vertices_begin();
+            v_it != myMesh.vertices_end(); ++v_it) {
+    
+            // Set property value
+            floatProp[*v_it] = val;
+    
+            // Increase value by 1.5
+            val += 1.5f;
+    }
+    
+    // Call some other function
+    someOtherFunction(myMesh);
+    
+    // Only at this point the property is destroyed and memory is released
+}
+
+void someOtherFunction(OpenVolumeMesh::GeometricPolyhedralMeshV3d& _mesh) {
+
+    // Try to get property by its name
+    OpenVolumeMesh::VertexPropertyT<float> floatProp = _mesh.request_vertex_property<float>("Vertex Weights");
+
+    // Now floatProp is a valid property that contains
+    // the values we have inserted before
+    // Access a property value via floatProp[vertexHandle].
+}
+\endcode
+
+For all other entities, this works the same way. Use class OpenVolumeMesh::EdgePropertyT
+as edge property, OpenVolumeMesh::HalfFacePropertyT for half-face properties,
+and so on...
+
+**/

@@ -1,0 +1,12 @@
+/**
+
+\page property_system Property System
+
+In %OpenVolumeMesh it is possible to attach properties of any data type to
+each of the entity types. This is accomplished by using template programming concepts
+of C++. All properties are instances of the class OpenVolumeMesh::OpenVolumeMeshPropertyT
+that expects a data type as template parameter. See Section \ref generic_properties for a
+more detailed overview about how to use properties. Tutorial \ref ovm_tutorial_03
+additionally describes how to use properties in practice using a compilable example.
+
+**/

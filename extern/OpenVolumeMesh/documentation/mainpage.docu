@@ -1,0 +1,59 @@
+/** 
+\if OPENVOLUMEMESH_INTERNAL_DOC
+\mainpage OpenVolumeMesh Documentation
+\else
+\page OpenVolumeMeshDoc OpenVolumeMesh Documentation
+\endif
+
+\image html volume_mesh.png
+
+Welcome to the %OpenVolumeMesh documentation.
+
+%OpenVolumeMesh is a generic data structure for the comfortable handling of arbitrary polyhedral
+meshes. Its concepts are closely related to OpenMesh (http://www.openmesh.org). In particular,
+%OpenVolumeMesh carries the general idea of storing edges as so-called (directed) half-edges over
+to the face definitions. So, faces are split up into so-called half-faces having opposing orientations.
+But unlike in the original concept of half-edges, local incidence information is not stored on a per
+half-edge basis. Instead, all entities are arranged in arrays, which makes %OpenVolumeMesh an
+index-based data structure where the access to entities via handles is accomplished in constant
+time complexity. By making the data structure index-based, we alleviate the major drawback of
+the half-edge data structure of only being capable to represent manifold meshes. In our concept,
+each entity of dimension \f$n\f$ only stores an (ordered) tuple of handles (or indices) pointing to the
+incident entities of dimension \f$(n-1)\f$. These incidence relations are called the top-down incidences.
+They are intrinsic to the implemented concept of volumentric meshes. One can additionally compute
+bottom-up incidences, which means that for each entity of dimension \f$n\f$, we also store handles to
+adjacent entities of dimension \f$(n+1)\f$. These incidence relations have to be computed explicitly which
+can be performed in linear time complexity. Both incidence relations, the top-down and the bottom-up
+incidences, are used to provide a set of iterators and circulators that are comfortable in use.
+As in OpenMesh, %OpenVolumeMesh provides an entirely generic underlying property system that allows
+attaching properties of any kind to the entities. 
+
+In this documentation, we first give a concise overview of the implemented concepts
+in Section \ref concepts. In Section \ref iterators_and_circulators, we introduce
+all necessary iterators provided by %OpenVolumeMesh. This library is additionally shipped with
+a file format that allows for reading and permanent storage of the volumetric meshes from/to files.
+Its specification can be found in \ref file_format. For information on the property system,
+please refer to Section \ref property_system. Step-by-step tutorials and code examples can be
+found in the tutorials section. %OpenVolumeMesh comes with a complete CMake build system
+which facilitates building the library platform-independently. It is written in pure C++
+using the standard template library and does not have any external dependencies except
+for GoogleTest which is (optionally) needed for building the unit tests. As per default,
+the unit tests are excluded from the build but can turned on as desired. Find information
+on how to build %OpenVolumeMesh in Section \ref building_openvolumemesh.
+
+\b Overview:
+
+\li \subpage concepts
+\li \subpage iterators_and_circulators
+\li \subpage file_format
+\li \subpage property_system
+\li \subpage building_openvolumemesh
+
+\b Tutorials:
+
+\li \subpage ovm_tutorial_01
+\li \subpage ovm_tutorial_02
+\li \subpage ovm_tutorial_03
+\li \subpage ovm_tutorial_04
+
+**/

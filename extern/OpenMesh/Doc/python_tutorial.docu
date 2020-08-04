@@ -1,0 +1,288 @@
+/** \page python_tutorial Python Tutorial
+
+This tutorial will introduce the basic concepts behind the %OpenMesh Python
+Bindings. We will cover the following topics:
+
+\li How to build the Python Bindings
+\li How to create an empty mesh
+\li How to add vertices and faces to a mesh
+\li How to navigate on a mesh using iterators and circulators
+\li How to add and remove custom properties
+\li How to read and write meshes from files
+
+In addition, we will briefly discuss some of the differences between the Python
+Bindings and the original C++ implementation of %OpenMesh.
+
+
+
+\section python_build Building the Python Bindings
+
+The Python Bindings depend on the following libraries:
+
+\li Python (2.7 or later)
+\li Boost Python (1.54.0 or later)
+
+\note Make sure that your Boost Python and Python versions match, i.e. that
+Boost Python was linked against the correct Python version.
+
+The Python Bindings are automatically built with %OpenMesh. The generated files are written to the
+Build/python subdirectory of the build tree. For more information on how to build %OpenMesh see
+\ref compiling.
+
+If CMake does not find your Python installation (or finds the wrong one) you can
+explicitly specify an installation by setting the following variables:
+
+\verbatim
+PYTHON_LIBRARY         - Path to the python library
+PYTHON_INCLUDE_DIR     - Path to where Python.h is found
+\endverbatim
+
+Similarly, if CMake does not find your Boost Python installation, set the
+following variables:
+
+\verbatim
+BOOST_ROOT             - Preferred installation prefix
+BOOST_INCLUDEDIR       - Preferred include directory e.g. <prefix>/include
+BOOST_LIBRARYDIR       - Preferred library directory e.g. <prefix>/lib
+\endverbatim
+
+
+
+\section python_start Getting Started
+
+To use the %OpenMesh Python Bindings we first need to import the openmesh module:
+
+\dontinclude python_tutorial.py
+\skipline from
+
+The module provides two mesh classes: One for polygonal meshes (PolyMesh) and
+one for triangle meshes (TriMesh). You should use triangle meshes whenever
+possible, since they are usually more efficient. In addition, some algorithms
+are only implemented for triangle meshes while triangle meshes inherit the full
+functionality of polygonal meshes.
+
+The following code creates a new triangle mesh:
+
+\skipline mesh
+
+
+
+\section python_add Adding Items to a Mesh
+
+We can add a new vertex to the mesh by calling the add_vertex() member function.
+This function gets a coordinate and returns a handle to the newly inserted
+vertex.
+
+\skipline vh0
+\until vh4
+
+To add a new face to the mesh we have to call add_face(). This function gets the
+handles of the vertices that make up the new face and returns a handle to the
+newly inserted face:
+
+\skipline fh0
+\until fh2
+
+We can also use a Python list to add a face to the mesh:
+
+\skipline vh_list
+\until fh3
+
+
+
+\section python_iterators Iterators and Circulators
+
+Now that we have added a couple of vertices to the mesh, we can iterate over
+them and print out their indices:
+
+\skipline for
+\until vh.idx()
+
+We can also iterate over halfedges, edges and faces by calling mesh.halfedges(),
+mesh.edges() and mesh.faces() respectively:
+
+\skipline iterate
+\until fh.idx()
+
+To iterate over the items adjacent to another item we can use one of the
+circulator functions. For example, to iterate over the vertices adjacent to
+another vertex we can call mesh.vv() and pass the handle of the center vertex:
+
+\skipline for
+\until vh.idx()
+
+We can also iterate over the adjacent halfedges, edges and faces:
+
+\skipline iterate
+\until fh.idx()
+
+To iterate over the items adjacent to a face we can use the following functions:
+
+\skipline iterate
+\until fh.idx()
+
+
+
+\section python_props Properties
+
+%OpenMesh allows us to dynamically add custom properties to a mesh. We can add
+properties to vertices, halfedges, edges, faces and the mesh itself. To
+add a property to a mesh (and later access its value) we have to use a property
+handle of the appropriate type:
+
+\li VPropHandle (for vertex properties)
+\li HPropHandle (for halfedge properties)
+\li EPropHandle (for edge properties)
+\li FPropHandle (for face properties)
+\li MPropHandle (for mesh properties)
+
+The following code shows how to add a vertex property to a mesh:
+
+\skipline prop_handle
+\until mesh
+
+The second parameter of the function add_property() is optional. The parameter
+is used to specify a name for the new property. This name can later be used
+to retrieve a handle to the property using the get_property_handle() member
+function.
+
+Now that we have added a vertex property to the mesh we can set and get its
+value. Here we will use the property to store the center of gravity of each
+vertex' neighborhood:
+
+\skipline for
+\until mesh.set_property
+
+Properties use Python's type system. This means that we can use the same
+property to store values of different types (e.g. store both strings and
+integers using the same vertex property). Properties are initialized to the
+Python built-in constant None.
+
+To remove a property we have to call remove_property() with the appropriate
+property handle:
+
+\skipline mesh.remove_property
+
+
+
+\section python_propman Property Managers
+
+Another way to add and remove a property is to use a property manager. A
+Property manager encapsulates a property and manages its lifecycle. A Property
+manager also provides a number of convenience functions to access the enclosed
+property.
+
+There are four different types of property managers. One for each type of mesh
+item:
+
+\li VPropertyManager (for vertex properties)
+\li HPropertyManager (for halfedge properties)
+\li EPropertyManager (for edge properties)
+\li FPropertyManager (for face properties)
+
+Property managers automatically add a new property to a mesh when they are
+initialized. Thus the following code not only creates a new vertex property
+manager, but also adds a new vertex property to the mesh:
+
+\skipline prop_man
+
+Property managers allow us to conveniently set the property value for an entire
+range of mesh items: 
+
+\skipline prop_man
+
+They also allow us to use the subscript operator to set and get property values.
+Here we will once again use a property to store the center of gravity of each
+vertex' neighborhood:
+
+\skipline for
+\until prop_man[vh] /= valence
+
+Properties that are encapsulated by a property manager are automatically removed
+from the mesh when the property manager goes out of scope (i.e. the property
+manager is garbage collected).
+
+
+
+\section python_io Read and write meshes from files
+
+You can read and write meshes from files using the read_mesh() and write_mesh()
+functions:
+
+\skipline mesh
+\until write_mesh(mesh, "bunny.obj")
+
+The file type is automatically deduced from the file extension. %OpenMesh
+currently supports four file types: .off, .obj, .stl and .om
+
+The behaviour of the I/O functions can be controlled by passing an instance of
+the Options class to either read_mesh() or write_mesh(). The class controls the
+behaviour of the I/O functions by means of enabled/disabled bits in a bitset:
+
+\skipline mesh
+\until print "something went wrong"
+
+Other available option bits include:
+
+-# mode bits - control binary reading/writing
+ - Options.Binary
+ - Options.MSB
+ - Options.LSB
+ - Options.Swap (MSB|LSB)
+-# property bits - controls which standard properties to read/write
+ - Options.VertexNormal
+ - Options.VertexTexCoord
+ - Options.VertexColor
+ - Options.FaceNormal
+ - Options.FaceColor
+ - Options.ColorAlpha
+ - Options.ColorFloat
+
+\note You have to pass an instance of the Options class to the I/O functions,
+i.e. you cannot directly pass one of the option bits. For example, directly
+passing Options.Binary to either one of the functions will cause an error.
+
+When reading a file the options are used as hints, i.e. depending on the format
+we can help the reader to interpret the data correctly.
+
+\note If you want to read a property from a file the property must have been
+requested prior to reading the file.
+
+When writing the mesh the mode bits control whether to use the binary variant of
+the respective file format and the desired byte-ordering.
+
+
+
+\section python_examples Additional Code Examples
+
+You can use our unit tests to learn more about the %OpenMesh Python Bindings.
+They are located in the src/Python/Unittests subdirectory.
+
+
+
+\section python_cpp Python and C++
+
+The interface of the Python Bindings is to a large extent identical to the
+interface of the original C++ implementation of %OpenMesh. You should therefore
+be able to use the C++ documentation as a reference for the Python Bindings. In
+particular, the classes KernelT, PolyMeshT and TriMeshT provide a good overview
+of the available mesh member functions. That being said, there are a number of
+small differences. For example, whenever the C++ implementation returns a
+reference to an object that is managed by %OpenMesh, the Python Bindings will
+return a copy of that object. This is due to the fact that Python does not have
+a language feature that is analogous to C++ references. One example of such a
+function is the point() member function of the PolyMesh and TriMesh classes.
+Unlike its C++ counterpart, the function does not return a reference to the
+requested point. It instead returns a copy of the point. This implies that you
+have to use the set_point() member function to change the value of a point. The
+same applies to the following functions: normal(), color(), property(),
+status(), etc.
+
+
+
+<br>The complete source looks like this:
+
+\include python_tutorial.py
+
+
+**/

@@ -1,0 +1,47 @@
+/**
+
+\page file_format File Format
+
+%OpenVolumeMesh comes with a file format specification
+that is implemented in the OpenVolumeMesh::IO::FileManager class.
+As for now, the file format only supports plain text, but a support
+for binary files is planned. Also the serialization of the
+persistent properties is not implemented, yet.
+A full generic support is planned for the future.
+%OpenVolumeMesh files should have the file name extension *.ovm.
+Find the file format specification below.
+
+\section file_spec File Format Specification
+
+
+\verbatim
+OVM ASCII                   # File header indicating whether data is
+                            # coded as plain text or binary
+Vertices                    # Indicate that all vertices are listed below
+n_v                         # The total number of vertices (>= 0)
+x_1 y_1 z_1                 # Coordinate of the first vertex
+...
+x_n y_n z_n                 # Coordinate of the n_v'th vertex
+Edges                       # Indicate that edges are specified below
+n_e                         # The total number of edges (>= 0)
+vs_1 vt_1                   # First edge's source vertex index followed
+...                         # by the first edge's target vertex index  
+vs_n vt_n                   # Last edge's source and target vertices
+Faces                       # Indicate that faces are specified below
+n_f                         # The total number of faces (>= 0)
+d he1_1 ... hed_1           # The first face's valence followed by its
+...                         # incident half-edges' indices
+d he1_n ... hed_n           # Last face's definition
+Polyhedra                   # Indicates that polyhedra are specified below
+n_c                         # The total number of cells (>= 0)
+d hf1_1 ... hfd_1           # The first polyhedron's valence followed
+...                         # by its incident half-faces' indices
+d hf1_n ... hfd_n           # The last polyhedron's definition
+# Properties coming soon...
+\endverbatim
+
+\section file_example A Simple Example File
+
+\include Cube_with_props.ovm
+
+**/
