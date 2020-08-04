@@ -5,15 +5,15 @@ ACM Transactions on Graphics (SIGGRAPH2020).
 If you are interested in the algorithm details, please refer to our **[paper](https://app.box.com/s/e6nb0ert440zbul6i84gl28u060b027t)**.This program works on 64-bit windows.
 
 ### Prerequisite
-+ Boost (1.66): https://sourceforge.net/projects/boost/files/boost-binaries/
-+ CGAL (4.13): https://www.cgal.org/releases.html
++ Boost (1.66 or later): https://sourceforge.net/projects/boost/files/boost-binaries/
++ CGAL (4.13 or later): https://www.cgal.org/releases.html
 + MOSEK 8: https://www.mosek.com/downloads/
-+ VTK (8.2): https://vtk.org/download/
-+ Eigen3: http://eigen.tuxfamily.org/index.php?title=Main_Page#Download
 + PolyCut: http://www.cs.ubc.ca/labs/imager/tr/2018/HexDemo/, download and extract it to a folder, make sure the one-month license has not expired.
 + HexEx: https://www.graphics.rwth-aachen.de/media/resource_files/HexEx_Windows_1_01.zip, download and extract it to a folder.
 
 The libraries and softwares above need to be installed **manually**, please set BOOST_ROOT CGAL_DIR EIGEN3_INCLUDE_DIR in your system path. Besides, our program has the following build-in dependencies:
++ VTK (8.2): https://vtk.org/download/
++ Eigen3: http://eigen.tuxfamily.org/index.php?title=Main_Page#Download
 + OpenMesh: https://www.graphics.rwth-aachen.de/software/openmesh/
 + OpenVolumeMesh: https://www.graphics.rwth-aachen.de/software/openvolumemesh/, we modify the source code slightly.
 + gflags: https://github.com/gflags/gflags.git
