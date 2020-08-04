@@ -2,7 +2,7 @@
 Haoxiang Guo, Xiaohan Liu, Dong-Ming Yan, Yang Liu.
 ACM Transactions on Graphics (SIGGRAPH2020).
 
-If you are interested in the algorithm details, please refer to our **[paper]**(https://app.box.com/s/e6nb0ert440zbul6i84gl28u060b027t).This program works on 64-bit windows.
+If you are interested in the algorithm details, please refer to our **[paper](https://app.box.com/s/e6nb0ert440zbul6i84gl28u060b027t)**.This program works on 64-bit windows.
 
 ### Prerequisite
 + Boost (1.66): https://sourceforge.net/projects/boost/files/boost-binaries/
