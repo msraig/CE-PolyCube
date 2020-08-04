@@ -50,7 +50,7 @@ cmake ..
 ```
 Build the solution in .\Build folder, then you can find the generated executable files in .\Bin folder. Then modify and run **.\Script\gen_hex.bat** as previously mentioned.
 
-We also provide the processed data **[here](https://drive.google.com/file/d/1g1RwWSkPRhl4HpcstE5hJALF3Zpq61pQ/view)**
+We also provide the processed data **[here](https://drive.google.com/file/d/1g1RwWSkPRhl4HpcstE5hJALF3Zpq61pQ/view)**.
 
 ### Citation
 ```
@@ -65,6 +65,6 @@ We also provide the processed data **[here](https://drive.google.com/file/d/1g1R
   publisher={ACM New York, NY, USA}
 }
 ```
-Please contact us (Haoxiang Guo ghx17@mails.tsinghua.edu.cn, Yang Liu yangliu@microsoft.com ) 
-if you have any problems about our implementation.  
+Please contact us (Haoxiang Guo ghx17@mails.tsinghua.edu.cn, Xiaohan Liu xh.liu.tech@gmail.com, Yang Liu yangliu@microsoft.com ) 
+if you have any problems about our implementation. 
 
