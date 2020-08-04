@@ -32,7 +32,7 @@ First, clone this repository:
 git clone https://github.com/msraig/CE-PolyCube.git
 cd CE-PolyCube
 ```
-We provide both the source code and the compiled executable files(in **Bin** folder). To use the executable files directly, please first set DATA_ROOT_PATH (path contains model folders), HEXEX_PATH (path containing hexex.exe) and POLYCUT_PATH (path containing polycut.exe) in **.\Script\gen_hex.bat** with no trailing slash. Then you can process a specific model, e.g sculpt by running:
+We provide both the source code and the compiled executable files(in **Bin** folder). To use the executable files directly, please first set DATA_ROOT_PATH (path contains model folders), HEXEX_PATH (path containing **hexex.exe**) and POLYCUT_PATH (path containing **polycut.exe**) in **.\Script\gen_hex.bat** with no trailing slash. Then you can process a specific model, e.g sculpt by running:
 ```
 cd ../Scripts
 gen_hex.bat sculpt
@@ -49,7 +49,7 @@ cd Build
 cmake ..
 ```
 Build the solution in .\Build folder, then you can find the generated executable files in .\Bin folder. Then modify and run **.\Script\gen_hex.bat** as previously mentioned.
-
+We also provide the processed data **[here](https://drive.google.com/file/d/1g1RwWSkPRhl4HpcstE5hJALF3Zpq61pQ/view)**
 
 ### Citation
 ```
