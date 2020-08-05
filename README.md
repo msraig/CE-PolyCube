@@ -11,17 +11,19 @@ If you are interested in the algorithm details, please refer to our **[paper](ht
 + **PolyCut**: http://www.cs.ubc.ca/labs/imager/tr/2018/HexDemo/, download and extract it to a folder, make sure the one-month license has not expired.
 + **HexEx**: https://www.graphics.rwth-aachen.de/media/resource_files/HexEx_Windows_1_01.zip, download and extract it to a folder.
 
-The libraries and softwares above need to be installed **manually**, please set BOOST_ROOT CGAL_DIR EIGEN3_INCLUDE_DIR in your system path. Besides, our program has the following build-in dependencies:
-+ **VTK (8.2)**: https://vtk.org/download/
+The libraries and softwares above need to be installed **manually**, please set BOOST_ROOT CGAL_DIR in your system path if Boost and CGAL installers do not set them sucessfully. 
+
+Our source code has the following build-in dependencies:
 + **Eigen3**: http://eigen.tuxfamily.org/index.php?title=Main_Page#Download
 + **OpenMesh**: https://www.graphics.rwth-aachen.de/software/openmesh/
-+ **OpenVolumeMesh**: https://www.graphics.rwth-aachen.de/software/openvolumemesh/, we modify the source code slightly.
++ **OpenVolumeMesh**: https://www.graphics.rwth-aachen.de/software/openvolumemesh/, we modified the source code.
 + **gflags**: https://github.com/gflags/gflags.git
 + **rapidxml**: http://rapidxml.sourceforge.net/
-+ **SUS**: https://www.dca.iusiani.ulpgc.es/SUScode/, we modify the source code slightly.
++ **SUS**: https://www.dca.iusiani.ulpgc.es/SUScode/, we modified the source code.
 + **ANN**: http://www.cs.umd.edu/~mount/ANN/
 + **TetGen**: http://wias-berlin.de/software/index.jsp?id=TetGen&lang=1, we modify the source code slightly.
 + **SuiteSparse**: http://faculty.cse.tamu.edu/davis/suitesparse.html
++ **VTK (8.2)**: https://vtk.org/download/ Only one utility program (vtudecode) requires VTK, we have provided the binary file and it is not necessary to recompile it.
 
 ### Data Preparation
 Our program takes a tetrahedral mesh (**\*.vtk**) and its feature edges (**\*.fea**) as input.  The feature file starts with the number of feature segments **n**, followed by **n** lines, where each line contains the two vertex indices of a feature edge segment. You can generate tetrahedral meshes from surface meshes using **[TetGen](http://wias-berlin.de/software/index.jsp?id=TetGen&lang=1)** or download our preprocessed data from **[here](https://drive.google.com/open?id=1KUysv4rmUIX1F5nnHKHaek5UboeCclE8)**
@@ -65,6 +67,6 @@ We also provide the processed data **[here](https://drive.google.com/file/d/1g1R
   publisher={ACM New York, NY, USA}
 }
 ```
-Please contact us (Haoxiang Guo ghx17@mails.tsinghua.edu.cn, Xiaohan Liu xh.liu.tech@gmail.com, Yang Liu yangliu@microsoft.com ) 
-if you have any problems about our implementation. 
+Please contact us (Haoxiang Guo ghx17@mails.tsinghua.edu.cn, Xiaohan Liu xh.liu.tech@gmail.com, Yang Liu yangliu@microsoft.com) or file an issue 
+if you meet any problem about our implementation. 
 
