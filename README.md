@@ -38,7 +38,7 @@ cd CE-PolyCube
 ```
 We provide both the source code and the compiled executable files(in **Bin** folder). To use the executable files directly, please first set DATA_ROOT_PATH (path contains model folders), HEXEX_PATH (path containing **hexex.exe**) and POLYCUT_PATH (path containing **polycut.exe**) in **.\Script\gen_hex.bat** with no trailing slash. Then you can process a specific model, e.g sculpt by running:
 ```
-cd ../Scripts
+cd Scripts
 gen_hex.bat sculpt
 ```
 If everything goes well, there will be three new files in DATA_ROOT_PATH/sculpt folder:
