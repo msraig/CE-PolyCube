@@ -21,7 +21,7 @@ Our source code has the following build-in dependencies:
 + **rapidxml**: http://rapidxml.sourceforge.net/
 + **SUS**: https://www.dca.iusiani.ulpgc.es/SUScode/, we modified the source code.
 + **ANN**: http://www.cs.umd.edu/~mount/ANN/
-+ **TetGen**: http://wias-berlin.de/software/index.jsp?id=TetGen&lang=1, we modify the source code slightly.
++ **TetGen**: http://wias-berlin.de/software/index.jsp?id=TetGen&lang=1, we modified the source code slightly.
 + **SuiteSparse**: http://faculty.cse.tamu.edu/davis/suitesparse.html
 + **VTK (8.2)**: https://vtk.org/download/,  One of utility programs -- vtudecode requires VTK, we have provided the binary file and it is not necessary to recompile it.
 + **CXXOPTS**: https://github.com/jarro2783/cxxopts
