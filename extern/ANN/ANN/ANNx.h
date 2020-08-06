@@ -1,8 +1,8 @@
 //----------------------------------------------------------------------
-// File:			ANNx.h
-// Programmer: 		Sunil Arya and David Mount
-// Description:		Internal include file for ANN
-// Last modified:	01/27/10 (Version 1.1.2)
+//	File:			ANNx.h
+//	Programmer: 	Sunil Arya and David Mount
+//	Last modified:	03/04/98 (Release 0.1)
+//	Description:	Internal include file for ANN
 //
 //	These declarations are of use in manipulating some of
 //	the internal data objects appearing in ANN, but are not
@@ -11,26 +11,26 @@
 //
 //	Typical users of ANN should not need to access this file.
 //----------------------------------------------------------------------
-// Copyright (c) 1997-2010 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 //	History:
-//	Revision 0.1 03/04/98
-//	  Initial release
-//	Revision 1.0 04/01/05
-//	  Changed LO, HI, IN, OUT to ANN_LO, ANN_HI, etc.
-//	Revision 1.1.2 01/27/10
-//		Fixed minor compilation bugs for new versions of gcc
+//	Revision 0.1  03/04/98
+//	    Initial release
+//	Revision 1.0  04/01/05
+//	    Changed LO, HI, IN, OUT to ANN_LO, ANN_HI, etc.
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #ifndef ANNx_H
@@ -50,20 +50,19 @@ enum ANNerr {ANNwarn = 0, ANNabort = 1};
 //----------------------------------------------------------------------
 //	Maximum number of points to visit
 //	We have an option for terminating the search early if the
-//	number of points visited exceeds some threshold. If the
-//	threshold is 0 (its default) this means there is no limit
+//	number of points visited exceeds some threshold.  If the
+//	threshold is 0 (its default)  this means there is no limit
 //	and the algorithm applies its normal termination condition.
 //----------------------------------------------------------------------
 
 extern int		ANNmaxPtsVisited;	// maximum number of pts visited
-extern int		ANNptsVisited;		// number of pts visited in search
 
 //----------------------------------------------------------------------
 //	Global function declarations
 //----------------------------------------------------------------------
 
 void annError(					// ANN error routine
-	const char*		msg,		// error message
+	char			*msg,		// error message
 	ANNerr			level);		// level of error
 
 void annPrintPt(				// print a point
@@ -78,7 +77,7 @@ void annPrintPt(				// print a point
 //	for the upper right corner (max coordinates).
 //
 //	The constructor initializes from either a pair of coordinates,
-//	pair of points, or another rectangle. Note that all constructors
+//	pair of points, or another rectangle.  Note that all constructors
 //	allocate new point storage. The destructor deallocates this
 //	storage.
 //
@@ -97,21 +96,21 @@ public:
 	int				dd,			// dimension of space
 	ANNcoord		l=0,		// default is empty
 	ANNcoord		h=0)
-	{ lo = annAllocPt(dd, l); hi = annAllocPt(dd, h); }
+	{  lo = annAllocPt(dd, l);  hi = annAllocPt(dd, h); }
 
 	ANNorthRect(				// (almost a) copy constructor
 	int				dd,			// dimension
 	const			ANNorthRect &r) // rectangle to copy
-	{ lo = annCopyPt(dd, r.lo); hi = annCopyPt(dd, r.hi); }
+	{  lo = annCopyPt(dd, r.lo);  hi = annCopyPt(dd, r.hi);  }
 
 	ANNorthRect(				// construct from points
 	int				dd,			// dimension
 	ANNpoint		l,			// low point
 	ANNpoint		h)			// hight point
-	{ lo = annCopyPt(dd, l); hi = annCopyPt(dd, h); }
+	{  lo = annCopyPt(dd, l);  hi = annCopyPt(dd, h);  }
 
 	~ANNorthRect()				// destructor
-  { annDeallocPt(lo); annDeallocPt(hi); }
+    {  annDeallocPt(lo);  annDeallocPt(hi);  }
 
 	ANNbool inside(int dim, ANNpoint p);// is point p inside rectangle?
 };
@@ -136,31 +135,31 @@ public:
 	int				sd;			// which side
 //
 	ANNorthHalfSpace()			// default constructor
-	{ cd = 0; cv = 0; sd = 0; }
+	{  cd = 0; cv = 0;  sd = 0;  }
 
 	ANNorthHalfSpace(			// basic constructor
 	int				cdd,		// dimension of space
 	ANNcoord		cvv,		// cutting value
 	int				sdd)		// side
-	{ cd = cdd; cv = cvv; sd = sdd; }
+	{  cd = cdd;  cv = cvv;  sd = sdd;  }
 
 	ANNbool in(ANNpoint q) const	// is q inside halfspace?
-	{ return (ANNbool) ((q[cd] - cv)*sd >= 0); }
+	{  return  (ANNbool) ((q[cd] - cv)*sd >= 0);  }
 
 	ANNbool out(ANNpoint q) const	// is q outside halfspace?
-	{ return (ANNbool) ((q[cd] - cv)*sd < 0); }
+	{  return  (ANNbool) ((q[cd] - cv)*sd < 0);  }
 
 	ANNdist dist(ANNpoint q) const	// (squared) distance from q
-	{ return (ANNdist) ANN_POW(q[cd] - cv); }
+	{  return  (ANNdist) ANN_POW(q[cd] - cv);  }
 
 	void setLowerBound(int d, ANNpoint p)// set to lower bound at p[i]
-	{ cd = d; cv = p[d]; sd = +1; }
+	{  cd = d;  cv = p[d];  sd = +1;  }
 
 	void setUpperBound(int d, ANNpoint p)// set to upper bound at p[i]
-	{ cd = d; cv = p[d]; sd = -1; }
+	{  cd = d;  cv = p[d];  sd = -1;  }
 
 	void project(ANNpoint &q)		// project q (modified) onto halfspace
-	{ if (out(q)) q[cd] = cv; }
+	{  if (out(q)) q[cd] = cv;  }
 };
 
 								// array of halfspaces

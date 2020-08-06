@@ -5,22 +5,24 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.0 04/01/05
+//	Revision 1.0  04/01/05
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #include "kd_tree.h"					// kd-tree definitions
@@ -62,8 +64,8 @@ void kd_split(
 //	midpt_split - midpoint splitting rule for box-decomposition trees
 //
 //		This is the simplest splitting rule that guarantees boxes
-//		of bounded aspect ratio. It simply cuts the box with the
-//		longest side through its midpoint. If there are ties, it
+//		of bounded aspect ratio.  It simply cuts the box with the
+//		longest side through its midpoint.  If there are ties, it
 //		selects the dimension with the maximum point spread.
 //
 //		WARNING: This routine (while simple) doesn't seem to work
@@ -126,9 +128,9 @@ void midpt_split(
 //	sl_midpt_split - sliding midpoint splitting rule
 //
 //		This is a modification of midpt_split, which has the nonsensical
-//		name "sliding midpoint". The idea is that we try to use the
-//		midpoint rule, by bisecting the longest side. If there are
-//		ties, the dimension with the maximum spread is selected. If,
+//		name "sliding midpoint".  The idea is that we try to use the
+//		midpoint rule, by bisecting the longest side.  If there are
+//		ties, the dimension with the maximum spread is selected.  If,
 //		however, the midpoint split produces a trivial split (no points
 //		on one side of the splitting plane) then we slide the splitting
 //		(maintaining its orientation) until it produces a nontrivial
@@ -223,7 +225,7 @@ void sl_midpt_split(
 //
 //		A constant FS_ASPECT_RATIO is defined. Given a box, those sides
 //		which can be split so that the ratio of the longest to shortest
-//		side does not exceed ASPECT_RATIO are identified. Among these
+//		side does not exceed ASPECT_RATIO are identified.  Among these
 //		sides, we select the one in which the points have the largest
 //		spread. We then split the points in a manner which most evenly
 //		distributes the points on either side of the splitting plane,
@@ -234,7 +236,7 @@ void sl_midpt_split(
 //		aspect ratio bound to be exceeded (small_piece).
 //
 //		This procedure is more robust than either kd_split or midpt_split,
-//		but is more complicated as well. When point distribution is
+//		but is more complicated as well.  When point distribution is
 //		extremely skewed, this degenerates to midpt_split (actually
 //		1/3 point split), and when the points are most evenly distributed,
 //		this degenerates to kd-split.
@@ -314,7 +316,7 @@ void fair_split(
 //		strengths of both fair split with sliding midpoint split.
 //		Fair split tends to produce balanced splits when the points
 //		are roughly uniformly distributed, but it can produce many
-//		trivial splits when points are highly clustered. Sliding
+//		trivial splits when points are highly clustered.  Sliding
 //		midpoint never produces trivial splits, and shrinks boxes
 //		nicely if points are highly clustered, but it may produce
 //		rather unbalanced splits when points are unclustered but not
@@ -326,7 +328,7 @@ void fair_split(
 //		points is fat.
 //
 //		This splitting rule operates by first computing the longest
-//		side of the current bounding box. Then it asks which sides
+//		side of the current bounding box.  Then it asks which sides
 //		could be split (at the midpoint) and still satisfy the aspect
 //		ratio bound with respect to this side.	Among these, it selects
 //		the side with the largest spread (as fair split would).	 It

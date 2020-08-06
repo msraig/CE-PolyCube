@@ -5,20 +5,20 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
 //----------------------------------------------------------------------
 
@@ -34,8 +34,8 @@
 
 //----------------------------------------------------------------------
 //	NOTE: Virtually all point indexing is done through an index (i.e.
-//	permutation) array pidx. Consequently, a reference to the d-th
-//	coordinate of the i-th point is pa[pidx[i]][d]. The macro PA(i,d)
+//	permutation) array pidx.  Consequently, a reference to the d-th
+//	coordinate of the i-th point is pa[pidx[i]][d].  The macro PA(i,d)
 //	is a shorthand for this.
 //----------------------------------------------------------------------
 										// standard 2-d indirect indexing
@@ -208,9 +208,9 @@ int annMaxSpread(						// compute dimension of max spread
 //----------------------------------------------------------------------
 //	annMedianSplit - split point array about its median
 //		Splits a subarray of points pa[0..n] about an element of given
-//		rank (median: n_lo = n/2) with respect to dimension d. It places
+//		rank (median: n_lo = n/2) with respect to dimension d.  It places
 //		the element of rank n_lo-1 correctly (because our splitting rule
-//		takes the mean of these two). On exit, the array is permuted so
+//		takes the mean of these two).  On exit, the array is permuted so
 //		that:
 //
 //		pa[0..n_lo-2][d] <= pa[n_lo-1][d] <= pa[n_lo][d] <= pa[n_lo+1..n-1][d].
@@ -255,7 +255,7 @@ void annMedianSplit(
 		}
 		PASWAP(l,k);					// pivot winds up in location k
 
-		if (k > n_lo)	  r = k-1;		// recurse on proper subarray
+		if (k > n_lo)	   r = k-1;		// recurse on proper subarray
 		else if (k < n_lo) l = k+1;
 		else break;						// got the median exactly
 	}
@@ -277,12 +277,12 @@ void annMedianSplit(
 //----------------------------------------------------------------------
 //	annPlaneSplit - split point array about a cutting plane
 //		Split the points in an array about a given plane along a
-//		given cutting dimension. On exit, br1 and br2 are set so
+//		given cutting dimension.  On exit, br1 and br2 are set so
 //		that:
 //		
-//				pa[ 0 ..br1-1] < cv
+//				pa[ 0 ..br1-1] <  cv
 //				pa[br1..br2-1] == cv
-//				pa[br2.. n -1] > cv
+//				pa[br2.. n -1] >  cv
 //
 //		All indexing is done indirectly through the index array pidx.
 //
@@ -322,7 +322,7 @@ void annPlaneSplit(				// split points by a plane
 //----------------------------------------------------------------------
 //	annBoxSplit - split point array about a orthogonal rectangle
 //		Split the points in an array about a given orthogonal
-//		rectangle. On exit, n_in is set to the number of points
+//		rectangle.  On exit, n_in is set to the number of points
 //		that are inside (or on the boundary of) the rectangle.
 //
 //		All indexing is done indirectly through the index array pidx.
@@ -352,9 +352,9 @@ void annBoxSplit(				// split points by a box
 //----------------------------------------------------------------------
 //	annSplitBalance - compute balance factor for a given plane split
 //		Balance factor is defined as the number of points lying
-//		below the splitting value minus n/2 (median). Thus, a
+//		below the splitting value minus n/2 (median).  Thus, a
 //		median split has balance 0, left of this is negative and
-//		right of this is positive. (The points are unchanged.)
+//		right of this is positive.  (The points are unchanged.)
 //----------------------------------------------------------------------
 
 int annSplitBalance(			// determine balance factor of a split
@@ -376,7 +376,7 @@ int annSplitBalance(			// determine balance factor of a split
 //		Given two boxes, an inner box enclosed within a bounding
 //		box, this routine determines all the sides for which the
 //		inner box is strictly contained with the bounding box,
-//		and adds an appropriate entry to a list of bounds. Then
+//		and adds an appropriate entry to a list of bounds.  Then
 //		we allocate storage for the final list of bounds, and return
 //		the resulting list and its size.
 //----------------------------------------------------------------------
@@ -419,7 +419,7 @@ void annBox2Bnds(						// convert inner box to bounds
 //----------------------------------------------------------------------
 //	annBnds2Box - convert list of bounds to bounding box
 //		Given an enclosing box and a list of bounds, this routine
-//		computes the corresponding inner box. It is assumed that
+//		computes the corresponding inner box.  It is assumed that
 //		the box points have been allocated already.
 //----------------------------------------------------------------------
 

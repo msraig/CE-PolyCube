@@ -2,33 +2,33 @@
 // File:			ANN.cpp
 // Programmer:		Sunil Arya and David Mount
 // Description:		Methods for ANN.h and ANNx.h
-// Last modified:	01/27/10 (Version 1.1.2)
+// Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
-// Copyright (c) 1997-2010 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.0 04/01/05
+//	Revision 1.0  04/01/05
 //		Added performance counting to annDist()
-//	Revision 1.1.2 01/27/10
-//		Fixed minor compilation bugs for new versions of gcc
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
-#include <cstdlib>						// C standard lib defs
 #include <ANN/ANNx.h>					// all ANN includes
 #include <ANN/ANNperf.h>				// ANN performance 
+#include <cstdlib>
 
 using namespace std;					// make std:: accessible
 
@@ -82,8 +82,8 @@ void annPrintPt(						// print a point
 //	Point allocation/deallocation:
 //
 //		Because points (somewhat like strings in C) are stored
-//		as pointers. Consequently, creating and destroying
-//		copies of points may require storage allocation. These
+//		as pointers.  Consequently, creating and destroying
+//		copies of points may require storage allocation.  These
 //		procedures do this.
 //
 //		annAllocPt() and annDeallocPt() allocate a deallocate
@@ -91,9 +91,9 @@ void annPrintPt(						// print a point
 //
 //		annAllocPts() allocates an array of points as well a place
 //		to store their coordinates, and initializes the points to
-//		point to their respective coordinates. It allocates point
+//		point to their respective coordinates.  It allocates point
 //		storage in a contiguous block large enough to store all the
-//		points. It performs no initialization.
+//		points.  It performs no initialization.
 //
 //		annDeallocPts() should only be used on point arrays allocated
 //		by annAllocPts since it assumes that points are allocated in
@@ -103,7 +103,7 @@ void annPrintPt(						// print a point
 //		for the new point.
 //
 //		annAssignRect() assigns the coordinates of one rectangle to
-//		another. The two rectangles must have the same dimension
+//		another.  The two rectangles must have the same dimension
 //		(and it is not possible to test this here).
 //----------------------------------------------------------------------
 
@@ -113,11 +113,11 @@ ANNpoint annAllocPt(int dim, ANNcoord c)		// allocate 1 point
 	for (int i = 0; i < dim; i++) p[i] = c;
 	return p;
 }
-  
+   
 ANNpointArray annAllocPts(int n, int dim)		// allocate n pts in dim
 {
 	ANNpointArray pa = new ANNpoint[n];			// allocate points
-	ANNpoint	 p = new ANNcoord[n*dim];		// allocate space for coords
+	ANNpoint	  p  = new ANNcoord[n*dim];		// allocate space for coords
 	for (int i = 0; i < n; i++) {
 		pa[i] = &(p[i*dim]);
 	}
@@ -129,21 +129,21 @@ void annDeallocPt(ANNpoint &p)					// deallocate 1 point
 	delete [] p;
 	p = NULL;
 }
-  
+   
 void annDeallocPts(ANNpointArray &pa)			// deallocate points
 {
 	delete [] pa[0];							// dealloc coordinate storage
 	delete [] pa;								// dealloc points
 	pa = NULL;
 }
-  
+   
 ANNpoint annCopyPt(int dim, ANNpoint source)	// copy point
 {
 	ANNpoint p = new ANNcoord[dim];
 	for (int i = 0; i < dim; i++) p[i] = source[i];
 	return p;
 }
-  
+   
 												// assign one rect to another
 void annAssignRect(int dim, ANNorthRect &dest, const ANNorthRect &source)
 {
@@ -166,7 +166,7 @@ ANNbool ANNorthRect::inside(int dim, ANNpoint p)
 //	Error handler
 //----------------------------------------------------------------------
 
-void annError(const char* msg, ANNerr level)
+void annError(char *msg, ANNerr level)
 {
 	if (level == ANNabort) {
 		cerr << "ANN: ERROR------->" << msg << "<-------------ERROR\n";
@@ -180,15 +180,14 @@ void annError(const char* msg, ANNerr level)
 //----------------------------------------------------------------------
 //	Limit on number of points visited
 //		We have an option for terminating the search early if the
-//		number of points visited exceeds some threshold. If the
-//		threshold is 0 (its default) this means there is no limit
+//		number of points visited exceeds some threshold.  If the
+//		threshold is 0 (its default)  this means there is no limit
 //		and the algorithm applies its normal termination condition.
 //		This is for applications where there are real time constraints
 //		on the running time of the algorithm.
 //----------------------------------------------------------------------
 
 int	ANNmaxPtsVisited = 0;	// maximum number of pts visited
-int	ANNptsVisited;			// number of pts visited in search
 
 //----------------------------------------------------------------------
 //	Global function declarations

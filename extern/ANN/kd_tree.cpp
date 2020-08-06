@@ -5,27 +5,29 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.0 04/01/05
+//	Revision 1.0  04/01/05
 //		Increased aspect ratio bound (ANN_AR_TOOBIG) from 100 to 1000.
 //		Fixed leaf counts to count trivial leaves.
 //		Added optional pa, pi arguments to Skeleton kd_tree constructor
 //			for use in load constructor.
 //		Added annClose() to eliminate KD_TRIVIAL memory leak.
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #include "kd_tree.h"					// kd-tree declarations
@@ -39,10 +41,10 @@
 //	For some splitting rules, especially with small bucket sizes,
 //	it is possible to generate a large number of empty leaf nodes.
 //	To save storage we allocate a single trivial leaf node which
-//	contains no points. For messy coding reasons it is convenient
+//	contains no points.  For messy coding reasons it is convenient
 //	to have it reference a trivial point index.
 //
-//	KD_TRIVIAL is allocated when the first kd-tree is created. It
+//	KD_TRIVIAL is allocated when the first kd-tree is created.  It
 //	must *never* deallocated (since it may be shared by more than
 //	one tree).
 //----------------------------------------------------------------------
@@ -52,15 +54,15 @@ ANNkd_leaf				*KD_TRIVIAL = NULL;		// trivial leaf node
 //----------------------------------------------------------------------
 //	Printing the kd-tree 
 //		These routines print a kd-tree in reverse inorder (high then
-//		root then low). (This is so that if you look at the output
+//		root then low).  (This is so that if you look at the output
 //		from the right side it appear from left to right in standard
-//		inorder.) When outputting leaves we output only the point
+//		inorder.)  When outputting leaves we output only the point
 //		indices rather than the point coordinates. There is an option
 //		to print the point coordinates separately.
 //
 //		The tree printing routine calls the printing routines on the
 //		individual nodes of the tree, passing in the level or depth
-//		in the tree. The level in the tree is used to print indentation
+//		in the tree.  The level in the tree is used to print indentation
 //		for readability.
 //----------------------------------------------------------------------
 
@@ -69,7 +71,7 @@ void ANNkd_split::print(				// print splitting node
 		ostream &out)					// output stream
 {
 	child[ANN_HI]->print(level+1, out);	// print high child
-	out << "  ";
+	out << "    ";
 	for (int i = 0; i < level; i++)		// print indentation
 		out << "..";
 	out << "Split cd=" << cut_dim << " cv=" << cut_val;
@@ -84,7 +86,7 @@ void ANNkd_leaf::print(					// print leaf node
 		ostream &out)					// output stream
 {
 
-	out << "  ";
+	out << "    ";
 	for (int i = 0; i < level; i++)		// print indentation
 		out << "..";
 
@@ -107,7 +109,7 @@ void ANNkd_tree::Print(					// print entire tree
 {
 	out << "ANN Version " << ANNversion << "\n";
 	if (with_pts) {						// print point coordinates
-		out << "  Points:\n";
+		out << "    Points:\n";
 		for (int i = 0; i < n_pts; i++) {
 			out << "\t" << i << ": ";
 			annPrintPt(pts[i], dim, out);
@@ -115,7 +117,7 @@ void ANNkd_tree::Print(					// print entire tree
 		}
 	}
 	if (root == NULL)					// empty tree?
-		out << "  Null tree.\n";
+		out << "    Null tree.\n";
 	else {
 		root->print(0, out);			// invoke printing at root
 	}
@@ -124,7 +126,7 @@ void ANNkd_tree::Print(					// print entire tree
 //----------------------------------------------------------------------
 //	kd_tree statistics (for performance evaluation)
 //		This routine compute various statistics information for
-//		a kd-tree. It is used by the implementors for performance
+//		a kd-tree.  It is used by the implementors for performance
 //		evaluation of the data structure.
 //----------------------------------------------------------------------
 
@@ -215,7 +217,7 @@ ANNkd_tree::~ANNkd_tree()				// tree destructor
 }
 
 //----------------------------------------------------------------------
-//	This is called with all use of ANN is finished. It eliminates the
+//	This is called with all use of ANN is finished.  It eliminates the
 //	minor memory leak caused by the allocation of KD_TRIVIAL.
 //----------------------------------------------------------------------
 void annClose()				// close use of ANN
@@ -226,12 +228,19 @@ void annClose()				// close use of ANN
 	}
 }
 
+void annInit()
+{
+  if (KD_TRIVIAL == NULL)	{			// no trivial leaf node yet?
+		KD_TRIVIAL = new ANNkd_leaf(0, IDX_TRIVIAL);	// allocate it
+  }
+}
+
 //----------------------------------------------------------------------
 //	kd_tree constructors
 //		There is a skeleton kd-tree constructor which sets up a
 //		trivial empty tree.	 The last optional argument allows
 //		the routine to be passed a point index array which is
-//		assumed to be of the proper size (n). Otherwise, one is
+//		assumed to be of the proper size (n).  Otherwise, one is
 //		allocated and initialized to the identity.	Warning: In
 //		either case the destructor will deallocate this array.
 //
@@ -266,45 +275,43 @@ void ANNkd_tree::SkeletonTree(			// construct skeleton tree
 	}
 
 	bnd_box_lo = bnd_box_hi = NULL;		// bounding box is nonexistent
-	if (KD_TRIVIAL == NULL)				// no trivial leaf node yet?
-		KD_TRIVIAL = new ANNkd_leaf(0, IDX_TRIVIAL);	// allocate it
 }
 
 ANNkd_tree::ANNkd_tree(					// basic constructor
 		int n,							// number of points
 		int dd,							// dimension
 		int bs)							// bucket size
-{ SkeletonTree(n, dd, bs); }			// construct skeleton tree
+{  SkeletonTree(n, dd, bs);  }			// construct skeleton tree
 
 //----------------------------------------------------------------------
 //	rkd_tree - recursive procedure to build a kd-tree
 //
 //		Builds a kd-tree for points in pa as indexed through the
 //		array pidx[0..n-1] (typically a subarray of the array used in
-//		the top-level call). This routine permutes the array pidx,
+//		the top-level call).  This routine permutes the array pidx,
 //		but does not alter pa[].
 //
 //		The construction is based on a standard algorithm for constructing
 //		the kd-tree (see Friedman, Bentley, and Finkel, ``An algorithm for
 //		finding best matches in logarithmic expected time,'' ACM Transactions
-//		on Mathematical Software, 3(3):209-226, 1977). The procedure
+//		on Mathematical Software, 3(3):209-226, 1977).  The procedure
 //		operates by a simple divide-and-conquer strategy, which determines
 //		an appropriate orthogonal cutting plane (see below), and splits
-//		the points. When the number of points falls below the bucket size,
+//		the points.  When the number of points falls below the bucket size,
 //		we simply store the points in a leaf node's bucket.
 //
 //		One of the arguments is a pointer to a splitting routine,
 //		whose prototype is:
 //		
 //				void split(
-//						ANNpointArray pa, // complete point array
-//						ANNidxArray pidx, // point array (permuted on return)
+//						ANNpointArray pa,  // complete point array
+//						ANNidxArray pidx,  // point array (permuted on return)
 //						ANNorthRect &bnds, // bounds of current cell
-//						int n,			  // number of points
-//						int dim,		  // dimension of space
-//						int &cut_dim,	  // cutting dimension
+//						int n,			   // number of points
+//						int dim,		   // dimension of space
+//						int &cut_dim,	   // cutting dimension
 //						ANNcoord &cut_val, // cutting value
-//						int &n_lo)		  // no. of points on low side of cut
+//						int &n_lo)		   // no. of points on low side of cut
 //
 //		This procedure selects a cutting dimension and cutting value,
 //		partitions pa about these values, and returns the number of

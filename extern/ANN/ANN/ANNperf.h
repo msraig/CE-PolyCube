@@ -8,23 +8,25 @@
 //	from the SmplStat.h package in the g++ library.
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
-//   History:
-//   Revision 0.1 03/04/98
-//     Initial release
-//   Revision 1.0 04/01/05
-//     Added ANN_ prefix to avoid name conflicts.
+// History:
+//  Revision 0.1  03/04/98
+//    Initial release
+//  Revision 1.0  04/01/05
+//    Added ANN_ prefix to avoid name conflicts.
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #ifndef ANNperf_H
@@ -70,9 +72,9 @@ public:
 };
 
 //----------------------------------------------------------------------
-// ANNsampStat
+//  ANNsampStat
 //	A sample stat collects numeric (double) samples and returns some
-//	simple statistics. Its main functions are:
+//	simple statistics.  Its main functions are:
 //
 //		reset()		Reset to no samples.
 //		+= x		Include sample x.
@@ -89,7 +91,7 @@ class DLL_API ANNsampStat {
 	double			minVal, maxVal;	// min and max
 public :
 	void reset()				// reset everything
-	{ 
+	{  
 		n = 0;
 		sum = sum2 = 0;
 		minVal = ANN_DBL_MAX;
@@ -100,7 +102,7 @@ public :
 
 	void operator+=(double x)		// add sample
 	{
-		n++; sum += x; sum2 += x*x;
+		n++;  sum += x;  sum2 += x*x;
 		if (x < minVal) minVal = x;
 		if (x > maxVal) maxVal = x;
 	}
@@ -121,25 +123,25 @@ public :
 //----------------------------------------------------------------------
 
 #ifdef ANN_PERF
- #define ANN_FLOP(n)	{ann_Nfloat_ops += (n);}
- #define ANN_LEAF(n)	{ann_Nvisit_lfs += (n);}
- #define ANN_SPL(n)	{ann_Nvisit_spl += (n);}
- #define ANN_SHR(n)	{ann_Nvisit_shr += (n);}
- #define ANN_PTS(n)	{ann_Nvisit_pts += (n);}
- #define ANN_COORD(n)	{ann_Ncoord_hts += (n);}
+  #define ANN_FLOP(n)	{ann_Nfloat_ops += (n);}
+  #define ANN_LEAF(n)	{ann_Nvisit_lfs += (n);}
+  #define ANN_SPL(n)	{ann_Nvisit_spl += (n);}
+  #define ANN_SHR(n)	{ann_Nvisit_shr += (n);}
+  #define ANN_PTS(n)	{ann_Nvisit_pts += (n);}
+  #define ANN_COORD(n)	{ann_Ncoord_hts += (n);}
 #else
- #define ANN_FLOP(n)
- #define ANN_LEAF(n)
- #define ANN_SPL(n)
- #define ANN_SHR(n)
- #define ANN_PTS(n)
- #define ANN_COORD(n)
+  #define ANN_FLOP(n)
+  #define ANN_LEAF(n)
+  #define ANN_SPL(n)
+  #define ANN_SHR(n)
+  #define ANN_PTS(n)
+  #define ANN_COORD(n)
 #endif
 
 //----------------------------------------------------------------------
 //	Performance statistics
 //	The following data and routines are used for computing performance
-//	statistics for nearest neighbor searching. Because these routines
+//	statistics for nearest neighbor searching.  Because these routines
 //	can slow the code down, they can be activated and deactiviated by
 //	defining the ANN_PERF variable, by compiling with the option:
 //	-DANN_PERF
@@ -165,7 +167,7 @@ public :
 //	coord_hts	The number of times a coordinate of a 
 //				data point is accessed. This is generally
 //				less than visit_pts*d if partial distance
-//				calculation is used. This count is low
+//				calculation is used.  This count is low
 //				in the sense that if a coordinate is hit
 //				many times in the same routine we may
 //				count it only once.
@@ -176,14 +178,14 @@ public :
 //
 //	average_err	The average error of each query (the
 //				error of the reported point to the true
-//				nearest neighbor). For k nearest neighbors
+//				nearest neighbor).  For k nearest neighbors
 //				the error is computed k times.
 //
 //	rank_err	The rank error of each query (the difference
 //				in the rank of the reported point and its
 //				true rank).
 //
-//	data_pts	The number of data points. This is not
+//	data_pts	The number of data points.  This is not
 //				a counter, but used in stats computation.
 //----------------------------------------------------------------------
 
@@ -202,8 +204,8 @@ extern ANNsampStat	ann_visit_pts;	// stats on points visited
 extern ANNsampStat	ann_coord_hts;	// stats on coordinate hits
 extern ANNsampStat	ann_float_ops;	// stats on floating ops
 //----------------------------------------------------------------------
-// The following need to be part of the public interface, because
-// they are accessed outside the DLL in ann_test.cpp.
+//  The following need to be part of the public interface, because
+//  they are accessed outside the DLL in ann_test.cpp.
 //----------------------------------------------------------------------
 DLL_API extern ANNsampStat ann_average_err;	// average error
 DLL_API extern ANNsampStat ann_rank_err;	// rank error

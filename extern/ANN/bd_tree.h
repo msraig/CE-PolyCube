@@ -5,23 +5,25 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.0 04/01/05
+//	Revision 1.0  04/01/05
 //		Changed IN, OUT to ANN_IN, ANN_OUT
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #ifndef ANN_bd_tree_H
@@ -37,7 +39,7 @@
 //
 //		Shrinking nodes are defined by list of orthogonal halfspaces.
 //		These halfspaces define a (possibly unbounded) orthogonal
-//		rectangle. There are two children, in and out. Points that
+//		rectangle.  There are two children, in and out.  Points that
 //		lie within this rectangle are stored in the in-child, and the
 //		other points are stored in the out-child.
 //
@@ -47,8 +49,8 @@
 //		worst case bound of 2*dim.
 //
 //		BEWARE: Note that constructor just copies the pointer to the
-//		bounding array, but the destructor deallocates it. This is
-//		rather poor practice, but happens to be convenient. The list
+//		bounding array, but the destructor deallocates it.  This is
+//		rather poor practice, but happens to be convenient.  The list
 //		is allocated in the bd-tree building procedure rbd_tree() just
 //		prior to construction, and is used for no other purposes.
 //
@@ -57,6 +59,10 @@
 //		are no two distinct halfspaces in the list with the same outward
 //		pointing normals.
 //----------------------------------------------------------------------
+
+struct s_kSearchParams;
+struct s_kFRSearchParams;
+struct s_kPriSearchParams;
 
 class ANNbd_shrink : public ANNkd_node	// splitting node of a kd-tree
 {
@@ -77,7 +83,7 @@ public:
 
 	~ANNbd_shrink()						// destructor
 		{
-			if (child[ANN_IN]!= NULL && child[ANN_IN]!= KD_TRIVIAL) 
+			if (child[ANN_IN]!= NULL && child[ANN_IN]!=  KD_TRIVIAL) 
 				delete child[ANN_IN];
 			if (child[ANN_OUT]!= NULL&& child[ANN_OUT]!= KD_TRIVIAL) 
 				delete child[ANN_OUT];
@@ -92,9 +98,9 @@ public:
 	virtual void print(int level, ostream &out);// print node
 	virtual void dump(ostream &out);			// dump node
 
-	virtual void ann_search(ANNdist);			// standard search
-	virtual void ann_pri_search(ANNdist);		// priority search
-	virtual void ann_FR_search(ANNdist); 		// fixed-radius search
+	virtual void ann_search(ANNdist,s_kSearchParams*);			// standard search
+	virtual void ann_pri_search(ANNdist,s_PriSearchParams*);		// priority search
+	virtual void ann_FR_search(ANNdist,s_kFRSearchParams*); 		// fixed-radius search
 };
 
 #endif

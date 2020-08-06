@@ -5,21 +5,23 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #ifndef ANN_kd_pr_search_H
@@ -38,12 +40,15 @@
 //		Appx_k_Near_Neigh().
 //----------------------------------------------------------------------
 
-extern double			ANNprEps;		// the error bound
-extern int				ANNprDim;		// dimension of space
-extern ANNpoint			ANNprQ;			// query point
-extern double			ANNprMaxErr;	// max tolerable squared error
-extern ANNpointArray	ANNprPts;		// the points
-extern ANNpr_queue		*ANNprBoxPQ;	// priority queue for boxes
-extern ANNmin_k			*ANNprPointMK;	// set of k closest points
+struct s_PriSearchParams {
+  double			ANNprEps;				// the error bound
+  int				ANNprDim;				// dimension of space
+  ANNpoint		ANNprQ;					// query point
+  double			ANNprMaxErr;			// max tolerable squared error
+  ANNpointArray	ANNprPts;				// the points
+  ANNpr_queue		*ANNprBoxPQ;			// priority queue for boxes
+  ANNmin_k		*ANNprPointMK;			// set of k closest points
+  int	           ANNptsVisited;		// number of pts visited in search
+};
 
 #endif

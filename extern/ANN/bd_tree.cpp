@@ -5,25 +5,27 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision l.0 04/01/05
+//	Revision l.0  04/01/05
 //		Fixed centroid shrink threshold condition to depend on the
 //			dimension.
 //		Moved dump routine to kd_dump.cpp.
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #include "bd_tree.h"					// bd-tree declarations
@@ -34,7 +36,7 @@
 
 //----------------------------------------------------------------------
 //	Printing a bd-tree 
-//		These routines print a bd-tree.  See the analogous procedure
+//		These routines print a bd-tree.   See the analogous procedure
 //		in kd_tree.cpp for more information.
 //----------------------------------------------------------------------
 
@@ -44,16 +46,16 @@ void ANNbd_shrink::print(				// print shrinking node
 {
 	child[ANN_OUT]->print(level+1, out);		// print out-child
 
-	out << "  ";
+	out << "    ";
 	for (int i = 0; i < level; i++)				// print indentation
 		out << "..";
 	out << "Shrink";
 	for (int j = 0; j < n_bnds; j++) {			// print sides, 2 per line
 		if (j % 2 == 0) {
 			out << "\n";						// newline and indentation
-			for (int i = 0; i < level+2; i++) out << " ";
+			for (int i = 0; i < level+2; i++) out << "  ";
 		}
-		out << " ([" << bnds[j].cd << "]"
+		out << "  ([" << bnds[j].cd << "]"
 			 << (bnds[j].sd > 0 ? ">=" : "< ")
 			 << bnds[j].cv << ")";
 	}
@@ -65,7 +67,7 @@ void ANNbd_shrink::print(				// print shrinking node
 //----------------------------------------------------------------------
 //	kd_tree statistics utility (for performance evaluation)
 //		This routine computes various statistics information for
-//		shrinking nodes. See file kd_tree.cpp for more information.
+//		shrinking nodes.  See file kd_tree.cpp for more information.
 //----------------------------------------------------------------------
 
 void ANNbd_shrink::getStats(					// get subtree statistics
@@ -166,17 +168,17 @@ enum ANNdecomp {SPLIT, SHRINK};			// decomposition methods
 //
 //		We compute the tight bounding box of the points, and compute
 //		the 2*dim ``gaps'' between the sides of the tight box and the
-//		bounding box. If any of the gaps is large enough relative to
+//		bounding box.  If any of the gaps is large enough relative to
 //		the longest side of the tight bounding box, then we shrink
-//		all sides whose gaps are large enough. (The reason for
+//		all sides whose gaps are large enough.  (The reason for
 //		comparing against the tight bounding box, is that after
 //		shrinking the longest box size will decrease, and if we use
 //		the standard bounding box, we may decide to shrink twice in
-//		a row. Since the tight box is fixed, we cannot shrink twice
+//		a row.  Since the tight box is fixed, we cannot shrink twice
 //		consecutively.)
 //----------------------------------------------------------------------
 const float BD_GAP_THRESH = 0.5;		// gap threshold (must be < 1)
-const int  BD_CT_THRESH = 2;			// min number of shrink sides
+const int   BD_CT_THRESH  = 2;			// min number of shrink sides
 
 ANNdecomp trySimpleShrink(				// try a simple shrink
 	ANNpointArray		pa,				// point array
@@ -224,7 +226,7 @@ ANNdecomp trySimpleShrink(				// try a simple shrink
 //
 //	We repeatedly apply the splitting rule, always to the larger subset
 //	of points, until the number of points decreases by the constant
-//	fraction BD_FRACTION. If this takes more than dim*BD_MAX_SPLIT_FAC
+//	fraction BD_FRACTION.  If this takes more than dim*BD_MAX_SPLIT_FAC
 //	splits for this to happen, then we shrink to the final inner box
 //	Otherwise we split.
 //----------------------------------------------------------------------
@@ -266,7 +268,7 @@ ANNdecomp tryCentroidShrink(			// try a centroid shrink
 			n_sub -= n_lo;
 		}
 	}
-  if (n_splits > dim*BD_MAX_SPLIT_FAC)// took too many splits
+    if (n_splits > dim*BD_MAX_SPLIT_FAC)// took too many splits
 		return SHRINK;					// shrink to final subset
 	else
 		return SPLIT;
@@ -317,15 +319,15 @@ ANNdecomp selectDecomp(			// select decomposition method
 //----------------------------------------------------------------------
 //	rbd_tree - recursive procedure to build a bd-tree
 //
-//		This is analogous to rkd_tree, but for bd-trees. See the
+//		This is analogous to rkd_tree, but for bd-trees.  See the
 //		procedure rkd_tree() in kd_split.cpp for more information.
 //
 //		If the number of points falls below the bucket size, then a
-//		leaf node is created for the points. Otherwise we invoke the
+//		leaf node is created for the points.  Otherwise we invoke the
 //		procedure selectDecomp() which determines whether we are to
-//		split or shrink. If splitting is chosen, then we essentially
+//		split or shrink.  If splitting is chosen, then we essentially
 //		do exactly as rkd_tree() would, and invoke the specified
-//		splitting procedure to the points. Otherwise, the selection
+//		splitting procedure to the points.  Otherwise, the selection
 //		procedure returns a bounding box, from which we extract the
 //		appropriate shrinking bounds, and create a shrinking node.
 //		Finally the points are subdivided, and the procedure is

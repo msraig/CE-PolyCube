@@ -5,20 +5,20 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
 //----------------------------------------------------------------------
 
@@ -38,24 +38,24 @@ typedef int				PQKinfo;		// info field is int
 //	Constants
 //		The NULL key value is used to initialize the priority queue, and
 //		so it should be larger than any valid distance, so that it will
-//		be replaced as legal distance values are inserted. The NULL
+//		be replaced as legal distance values are inserted.  The NULL
 //		info value must be a nonvalid array index, we use ANN_NULL_IDX,
 //		which is guaranteed to be negative.
 //----------------------------------------------------------------------
 
-const PQKkey	PQ_NULL_KEY = ANN_DIST_INF;	// nonexistent key value
-const PQKinfo	PQ_NULL_INFO = ANN_NULL_IDX;	// nonexistent info value
+const PQKkey	PQ_NULL_KEY  =  ANN_DIST_INF;	// nonexistent key value
+const PQKinfo	PQ_NULL_INFO =  ANN_NULL_IDX;	// nonexistent info value
 
 //----------------------------------------------------------------------
 //	ANNmin_k
 //		An ANNmin_k structure is one which maintains the smallest
 //		k values (of type PQKkey) and associated information (of type
-//		PQKinfo). The special info and key values PQ_NULL_INFO and
+//		PQKinfo).  The special info and key values PQ_NULL_INFO and
 //		PQ_NULL_KEY means that thise entry is empty.
 //
 //		It is currently implemented using an array with k items.
 //		Items are stored in increasing sorted order, and insertions
-//		are made through standard insertion sort. (This is quite
+//		are made through standard insertion sort.  (This is quite
 //		inefficient, but current applications call for small values
 //		of k and relatively few insertions.)
 //		

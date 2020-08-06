@@ -5,23 +5,25 @@
 // Last modified:	05/03/05 (Version 1.1)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.1 05/03/05
+//	Revision 1.1  05/03/05
 //		Added fixed radius kNN search
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 
 #ifndef ANN_kd_tree_H
@@ -37,19 +39,23 @@ using namespace std;					// make std:: available
 //		Nodes in kd-trees are of two types, splitting nodes which contain
 //		splitting information (a splitting hyperplane orthogonal to one
 //		of the coordinate axes) and leaf nodes which contain point
-//		information (an array of points stored in a bucket). This is
+//		information (an array of points stored in a bucket).  This is
 //		handled by making a generic class kd_node, which is essentially an
 //		empty shell, and then deriving the leaf and splitting nodes from
 //		this.
 //----------------------------------------------------------------------
 
+struct s_kSearchParams;
+struct s_kFRSearchParams;
+struct s_PriSearchParams;
+
 class ANNkd_node{						// generic kd-tree node (empty shell)
 public:
 	virtual ~ANNkd_node() {}					// virtual distroyer
 
-	virtual void ann_search(ANNdist) = 0;		// tree search
-	virtual void ann_pri_search(ANNdist) = 0;	// priority search
-	virtual void ann_FR_search(ANNdist) = 0;	// fixed-radius search
+	virtual void ann_search(ANNdist,s_kSearchParams*) = 0;		// tree search
+	virtual void ann_pri_search(ANNdist,s_PriSearchParams*) = 0;	// priority search
+	virtual void ann_FR_search(ANNdist,s_kFRSearchParams*) = 0;	// fixed-radius search
 
 	virtual void getStats(						// get tree statistics
 				int dim,						// dimension of space
@@ -82,11 +88,13 @@ typedef void (*ANNkd_splitter)(			// splitting routine for kd-trees
 //----------------------------------------------------------------------
 //	Leaf kd-tree node
 //		Leaf nodes of the kd-tree store the set of points associated
-//		with this bucket, stored as an array of point indices. These
+//		with this bucket, stored as an array of point indices.  These
 //		are indices in the array points, which resides with the
-//		root of the kd-tree. We also store the number of points
+//		root of the kd-tree.  We also store the number of points
 //		that reside in this bucket.
 //----------------------------------------------------------------------
+
+struct s_kSearchParams;
 
 class ANNkd_leaf: public ANNkd_node		// leaf node for kd-tree
 {
@@ -110,9 +118,9 @@ public:
 	virtual void print(int level, ostream &out);// print node
 	virtual void dump(ostream &out);			// dump node
 
-	virtual void ann_search(ANNdist);			// standard search
-	virtual void ann_pri_search(ANNdist);		// priority search
-	virtual void ann_FR_search(ANNdist);		// fixed-radius search
+	virtual void ann_search(ANNdist,s_kSearchParams*);			// standard search
+	virtual void ann_pri_search(ANNdist,s_PriSearchParams*);		// priority search
+	virtual void ann_FR_search(ANNdist,s_kFRSearchParams*);		// fixed-radius search
 };
 
 //----------------------------------------------------------------------
@@ -138,6 +146,8 @@ extern ANNkd_leaf *KD_TRIVIAL;					// trivial (empty) leaf node
 //		box since this may be wasteful of space in high dimensions].
 //		We also store pointers to the 2 children.
 //----------------------------------------------------------------------
+
+struct s_kSearchParams;
 
 class ANNkd_split : public ANNkd_node	// splitting node of a kd-tree
 {
@@ -176,9 +186,9 @@ public:
 	virtual void print(int level, ostream &out);// print node
 	virtual void dump(ostream &out);			// dump node
 
-	virtual void ann_search(ANNdist);			// standard search
-	virtual void ann_pri_search(ANNdist);		// priority search
-	virtual void ann_FR_search(ANNdist);		// fixed-radius search
+	virtual void ann_search(ANNdist,s_kSearchParams*);			// standard search
+	virtual void ann_pri_search(ANNdist,s_PriSearchParams*);		// priority search
+	virtual void ann_FR_search(ANNdist,s_kFRSearchParams*);		// fixed-radius search
 };
 
 //----------------------------------------------------------------------

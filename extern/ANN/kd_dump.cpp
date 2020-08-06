@@ -5,34 +5,38 @@
 // Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
 // Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.0 04/01/05
+//	Revision 1.0  04/01/05
 //		Moved dump out of kd_tree.cc into this file.
 //		Added kd-tree load constructor.
+//  Revision 1.1.ts 16/03/09
+//    Sylvain Lefebvre - thread safe version (removed globals used for recursion)
 //----------------------------------------------------------------------
 // This file contains routines for dumping kd-trees and bd-trees and
 // reloading them. (It is an abuse of policy to include both kd- and
-// bd-tree routines in the same file, sorry. There should be no problem
+// bd-tree routines in the same file, sorry.  There should be no problem
 // in deleting the bd- versions of the routines if they are not
 // desired.)
 //----------------------------------------------------------------------
 
 #include "kd_tree.h"					// kd-tree declarations
 #include "bd_tree.h"					// bd-tree declarations
+#include <cstdlib>
+#include <string.h>
 
 using namespace std;					// make std:: available
 
@@ -77,13 +81,13 @@ static ANNkd_ptr annReadTree(			// read tree-part of dump file
 //		points <dim> <n_pts>			(point coordinates: this is optional)
 //		0 <xxx> <xxx> ... <xxx>			(point indices and coordinates)
 //		1 <xxx> <xxx> ... <xxx>
-//		 ...
+//		  ...
 //		tree <dim> <n_pts> <bkt_size>
 //		<xxx> <xxx> ... <xxx>			(lower end of bounding box)
 //		<xxx> <xxx> ... <xxx>			(upper end of bounding box)
 //				If the tree is null, then a single line "null" is
 //				output.	 Otherwise the nodes of the tree are printed
-//				one per line in preorder. Leaves and splitting nodes 
+//				one per line in preorder.  Leaves and splitting nodes 
 //				have the following formats:
 //		Leaf node:
 //				leaf <n_pts> <bkt[0]> <bkt[1]> ... <bkt[n-1]>
@@ -177,7 +181,7 @@ void ANNbd_shrink::dump(				// dump a shrinking node
 //
 //		Indirectly, this procedure allocates space for points, point
 //		indices, all nodes in the tree, and the bounding box for the
-//		tree. When the tree is destroyed, all but the points are
+//		tree.  When the tree is destroyed, all but the points are
 //		deallocated.
 //
 //		This routine calls annReadDump to do all the work.
@@ -305,7 +309,7 @@ static ANNkd_ptr annReadDump(
 	//------------------------------------------------------------------
 	//	Input the tree
 	//			After the basic header information, we invoke annReadTree
-	//			to do all the heavy work. We create our own array of
+	//			to do all the heavy work.  We create our own array of
 	//			point indices (so we can pass them to annReadTree())
 	//			but we do not deallocate them.	They will be deallocated
 	//			when the tree is destroyed.
@@ -344,7 +348,7 @@ static ANNkd_ptr annReadDump(
 //		calls as needed to input the children of this node (if internal).
 //		It returns a pointer to the node that was created.	An array
 //		of point indices is given along with a pointer to the next
-//		available location in the array. As leaves are read, their
+//		available location in the array.  As leaves are read, their
 //		point indices are stored here, and the point buckets point
 //		to the first entry in the array.
 //

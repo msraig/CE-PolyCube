@@ -2,34 +2,33 @@
 // File:			perf.cpp
 // Programmer:		Sunil Arya and David Mount
 // Description:		Methods for performance stats
-// Last modified:	01/27/10 (Version 1.1.2)
+// Last modified:	01/04/05 (Version 1.0)
 //----------------------------------------------------------------------
-// Copyright (c) 1997-2010 University of Maryland and Sunil Arya and
-// David Mount. All Rights Reserved.
+// Copyright (c) 1997-2005 University of Maryland and Sunil Arya and
+// David Mount.  All Rights Reserved.
 // 
 // This software and related documentation is part of the Approximate
-// Nearest Neighbor Library (ANN). This software is provided under
-// the provisions of the Lesser GNU Public License (LGPL). See the
+// Nearest Neighbor Library (ANN).  This software is provided under
+// the provisions of the Lesser GNU Public License (LGPL).  See the
 // file ../ReadMe.txt for further information.
 // 
 // The University of Maryland (U.M.) and the authors make no
 // representations about the suitability or fitness of this software for
-// any purpose. It is provided "as is" without express or implied
+// any purpose.  It is provided "as is" without express or implied
 // warranty.
 //----------------------------------------------------------------------
 // History:
-//	Revision 0.1 03/04/98
+//	Revision 0.1  03/04/98
 //		Initial release
-//	Revision 1.0 04/01/05
+//	Revision 1.0  04/01/05
 //		Changed names to avoid namespace conflicts.
 //		Added flush after printing performance stats to fix bug
 //			in Microsoft Windows version.
-//	Revision 1.1.2 01/27/10
-//		Fixed minor compilation bugs for new versions of gcc
 //----------------------------------------------------------------------
 
 #include <ANN/ANN.h>					// basic ANN includes
 #include <ANN/ANNperf.h>				// performance includes
+#include <cstdlib>
 
 using namespace std;					// make std:: available
 
@@ -46,7 +45,7 @@ using namespace std;					// make std:: available
 //	Global counters for performance measurement
 //----------------------------------------------------------------------
 
-int				ann_Ndata_pts = 0;		// number of data points
+int				ann_Ndata_pts  = 0;		// number of data points
 int				ann_Nvisit_lfs = 0;		// number of leaf nodes visited
 int				ann_Nvisit_spl = 0;		// number of splitting nodes visited
 int				ann_Nvisit_shr = 0;		// number of shrinking nodes visited
@@ -68,9 +67,9 @@ ANNsampStat		ann_rank_err;			// rank error
 //	Routines for statistics.
 //----------------------------------------------------------------------
 
-DLL_API void annResetStats(int data_size) // reset stats for a set of queries
+/*DLL_API */void annResetStats(int data_size) // reset stats for a set of queries
 {
-	ann_Ndata_pts = data_size;
+	ann_Ndata_pts  = data_size;
 	ann_visit_lfs.reset();
 	ann_visit_spl.reset();
 	ann_visit_shr.reset();
@@ -82,7 +81,7 @@ DLL_API void annResetStats(int data_size) // reset stats for a set of queries
 	ann_rank_err.reset();
 }
 
-DLL_API void annResetCounts()				// reset counts for one query
+/*DLL_API */void annResetCounts()				// reset counts for one query
 {
 	ann_Nvisit_lfs = 0;
 	ann_Nvisit_spl = 0;
@@ -92,7 +91,7 @@ DLL_API void annResetCounts()				// reset counts for one query
 	ann_Nfloat_ops = 0;
 }
 
-DLL_API void annUpdateStats()				// update stats with current counts
+/*DLL_API */void annUpdateStats()				// update stats with current counts
 {
 	ann_visit_lfs += ann_Nvisit_lfs;
 	ann_visit_nds += ann_Nvisit_spl + ann_Nvisit_lfs;
@@ -104,7 +103,7 @@ DLL_API void annUpdateStats()				// update stats with current counts
 }
 
 										// print a single statistic
-void print_one_stat(const char* title, ANNsampStat s, double div)
+void print_one_stat(char *title, ANNsampStat s, double div)
 {
 	cout << title << "= [ ";
 	cout.width(9); cout << s.mean()/div			<< " : ";
@@ -113,24 +112,24 @@ void print_one_stat(const char* title, ANNsampStat s, double div)
 	cout.width(9); cout << s.max()/div			<< " >\n";
 }
 
-DLL_API void annPrintStats(				// print statistics for a run
+/*DLL_API */void annPrintStats(				// print statistics for a run
 	ANNbool validate)					// true if average errors desired
 {
 	cout.precision(4);					// set floating precision
-	cout << " (Performance stats: "
-		 << " [   mean :  stddev ]<   min ,    max >\n";
-	print_one_stat("  leaf_nodes    ", ann_visit_lfs, 1);
-	print_one_stat("  splitting_nodes ", ann_visit_spl, 1);
-	print_one_stat("  shrinking_nodes ", ann_visit_shr, 1);
-	print_one_stat("  total_nodes   ", ann_visit_nds, 1);
-	print_one_stat("  points_visited  ", ann_visit_pts, 1);
-	print_one_stat("  coord_hits/pt  ", ann_coord_hts, ann_Ndata_pts);
-	print_one_stat("  floating_ops_(K) ", ann_float_ops, 1000);
+	cout << "  (Performance stats: "
+		 << " [      mean :    stddev ]<      min ,       max >\n";
+	print_one_stat("    leaf_nodes       ", ann_visit_lfs, 1);
+	print_one_stat("    splitting_nodes  ", ann_visit_spl, 1);
+	print_one_stat("    shrinking_nodes  ", ann_visit_shr, 1);
+	print_one_stat("    total_nodes      ", ann_visit_nds, 1);
+	print_one_stat("    points_visited   ", ann_visit_pts, 1);
+	print_one_stat("    coord_hits/pt    ", ann_coord_hts, ann_Ndata_pts);
+	print_one_stat("    floating_ops_(K) ", ann_float_ops, 1000);
 	if (validate) {
-		print_one_stat("  average_error  ", ann_average_err, 1);
-		print_one_stat("  rank_error    ", ann_rank_err, 1);
+		print_one_stat("    average_error    ", ann_average_err, 1);
+		print_one_stat("    rank_error       ", ann_rank_err, 1);
 	}
 	cout.precision(0);					// restore the default
-	cout << " )\n";
+	cout << "  )\n";
 	cout.flush();
 }
