@@ -24,7 +24,7 @@ DEFINE_double(mv, 2.0, "max volume");
 DEFINE_int32(cf, 1, "cut flag");
 DEFINE_int32(si, 1, "save intermediate result");
 DEFINE_int32(cl, 0, "set cube length");
-DEFINE_int32(bs, 1, "cut batch size");
+DEFINE_int32(bs, 5, "cut batch size");
 DEFINE_double(cr, 1.0, "cut edge ratio");
 DEFINE_int32(ii, 10, "ivf iteration");
 DEFINE_int32(sf, 0, "save flip information");
