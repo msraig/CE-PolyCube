@@ -17,7 +17,7 @@ DEFINE_string(input_fea_name, "nofeature.fea", "input feature name");
 DEFINE_string(log_dir, "./", "log directory");
 DEFINE_int32(hex_flag, 1, "Hex Meshing Flag"); //to produce float result, hex flag should be set to 0; to produce int result, set it as 1
 DEFINE_double(ss, 1.0, "sigma_s");
-DEFINE_double(sr, 3.0, "sigma_r");
+DEFINE_double(sr, 3.0, "sigma_r"); //controling the target edge length of hex mesh
 DEFINE_double(cd, 0.3, "cut depth");
 DEFINE_int32(dt, 0, "distortion type"); //0: isometric, 1: conformal 2: volumetric
 DEFINE_double(mv, 2.0, "max volume");
