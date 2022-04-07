@@ -174,7 +174,7 @@ void unalignedassert()
 #endif
 }
 
-EIGEN_DECLARE_TEST(unalignedassert)
+void test_unalignedassert()
 {
   CALL_SUBTEST(unalignedassert());
 }

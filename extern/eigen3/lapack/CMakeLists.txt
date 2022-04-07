@@ -35,7 +35,7 @@ set(EigenLapack_SRCS  ${EigenLapack_SRCS}
   second_NONE.f dsecnd_NONE.f
 )
 
-option(EIGEN_ENABLE_LAPACK_TESTS OFF "Enable the Lapack unit tests")
+option(EIGEN_ENABLE_LAPACK_TESTS OFF "Enbale the Lapack unit tests")
 
 if(EIGEN_ENABLE_LAPACK_TESTS)
 
@@ -59,7 +59,7 @@ if(EIGEN_ENABLE_LAPACK_TESTS)
       message(STATUS "Setup lapack reference and lapack unit tests")
       execute_process(COMMAND tar xzf  "lapack_addons_3.4.1.tgz" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     else()
-      message(STATUS "Download of lapack_addons_3.4.1.tgz failed, LAPACK unit tests won't be enabled")
+      message(STATUS "Download of lapack_addons_3.4.1.tgz failed, LAPACK unit tests wont be enabled")
       set(EIGEN_ENABLE_LAPACK_TESTS false)
     endif()
                   
@@ -74,7 +74,7 @@ if(EIGEN_ENABLE_LAPACK_TESTS)
         sgetrf.f  dgetrf.f  cgetrf.f  zgetrf.f
         sgetrs.f  dgetrs.f  cgetrs.f  zgetrs.f)
     
-    file(GLOB ReferenceLapack_SRCS0 RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "reference/*.f")
+    FILE(GLOB ReferenceLapack_SRCS0 RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "reference/*.f")
     foreach(filename1 IN LISTS ReferenceLapack_SRCS0)
       string(REPLACE "reference/" "" filename ${filename1})
       list(FIND EigenLapack_SRCS ${filename} id1)
@@ -86,9 +86,9 @@ if(EIGEN_ENABLE_LAPACK_TESTS)
   endif()
   
   
-endif()
+endif(EIGEN_ENABLE_LAPACK_TESTS)
 
-endif()
+endif(EIGEN_Fortran_COMPILER_WORKS)
 
 add_library(eigen_lapack_static ${EigenLapack_SRCS} ${ReferenceLapack_SRCS})
 add_library(eigen_lapack SHARED ${EigenLapack_SRCS})
@@ -152,7 +152,7 @@ if(EXISTS ${eigen_full_path_to_testing_lapack})
         -DINTDIR=${CMAKE_CFG_INTDIR}
         -P "${LAPACK_SOURCE_DIR}/testing/runtest.cmake")
     endif()
-  endmacro()
+  endmacro(add_lapack_test)
 
   if (BUILD_SINGLE)
   add_lapack_test(stest.out stest.in xlintsts)

@@ -117,7 +117,7 @@ template<typename Scalar> void lines()
       VERIFY_IS_APPROX(result, center);
 
     // check conversions between two types of lines
-    PLine pl(line_u); // gcc 3.3 will crash if we don't name this variable.
+    PLine pl(line_u); // gcc 3.3 will commit suicide if we don't name this variable
     HLine line_u2(pl);
     CoeffsType converted_coeffs = line_u2.coeffs();
     if(line_u2.normal().dot(line_u.normal())<Scalar(0))
@@ -180,7 +180,7 @@ template<typename Scalar> void hyperplane_alignment()
 }
 
 
-EIGEN_DECLARE_TEST(geo_hyperplane)
+void test_geo_hyperplane()
 {
   for(int i = 0; i < g_repeat; i++) {
     CALL_SUBTEST_1( hyperplane(Hyperplane<float,2>()) );

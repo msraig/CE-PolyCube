@@ -67,8 +67,6 @@ void jacobisvd_method()
   VERIFY_RAISES_ASSERT(m.jacobiSvd().matrixU());
   VERIFY_RAISES_ASSERT(m.jacobiSvd().matrixV());
   VERIFY_IS_APPROX(m.jacobiSvd(ComputeFullU|ComputeFullV).solve(m), m);
-  VERIFY_IS_APPROX(m.jacobiSvd(ComputeFullU|ComputeFullV).transpose().solve(m), m);
-  VERIFY_IS_APPROX(m.jacobiSvd(ComputeFullU|ComputeFullV).adjoint().solve(m), m);
 }
 
 namespace Foo {
@@ -86,7 +84,7 @@ void msvc_workaround()
   std::max EIGEN_NOT_A_MACRO (a,b);
 }
 
-EIGEN_DECLARE_TEST(jacobisvd)
+void test_jacobisvd()
 {
   CALL_SUBTEST_3(( jacobisvd_verify_assert(Matrix3f()) ));
   CALL_SUBTEST_4(( jacobisvd_verify_assert(Matrix4d()) ));

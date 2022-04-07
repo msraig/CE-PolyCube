@@ -34,7 +34,7 @@ void check_abs() {
   }
 }
 
-EIGEN_DECLARE_TEST(numext) {
+void test_numext() {
   CALL_SUBTEST( check_abs<bool>() );
   CALL_SUBTEST( check_abs<signed char>() );
   CALL_SUBTEST( check_abs<unsigned char>() );
@@ -45,7 +45,6 @@ EIGEN_DECLARE_TEST(numext) {
   CALL_SUBTEST( check_abs<long>() );
   CALL_SUBTEST( check_abs<unsigned long>() );
   CALL_SUBTEST( check_abs<half>() );
-  CALL_SUBTEST( check_abs<bfloat16>() );
   CALL_SUBTEST( check_abs<float>() );
   CALL_SUBTEST( check_abs<double>() );
   CALL_SUBTEST( check_abs<long double>() );

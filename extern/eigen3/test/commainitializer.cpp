@@ -34,14 +34,8 @@ void test_blocks()
 
   if(N1 > 0)
   {
-    if(M1 > 0)
-    {
-      VERIFY_RAISES_ASSERT((m_fixed << mat11, mat12, mat11, mat21, mat22));
-    }
-    if(M2 > 0)
-    {
-      VERIFY_RAISES_ASSERT((m_fixed << mat11, mat12, mat21, mat21, mat22));
-    }
+    VERIFY_RAISES_ASSERT((m_fixed << mat11, mat12, mat11, mat21, mat22));
+    VERIFY_RAISES_ASSERT((m_fixed << mat11, mat12, mat21, mat21, mat22));
   }
   else
   {
@@ -55,25 +49,23 @@ void test_blocks()
 }
 
 
-template<int depth, int N=0>
+template<int N>
 struct test_block_recursion
 {
   static void run()
   {
-    test_block_recursion<depth-1, N>::run();
-    test_block_recursion<depth-1, N + (1 << (depth-1))>::run();
-  }
-};
-
-template<int N>
-struct test_block_recursion<0,N>
-{
-  static void run() {
     test_blocks<(N>>6)&3, (N>>4)&3, (N>>2)&3, N & 3>();
+    test_block_recursion<N-1>::run();
   }
 };
 
-EIGEN_DECLARE_TEST(commainitializer)
+template<>
+struct test_block_recursion<-1>
+{
+  static void run() { }
+};
+
+void test_commainitializer()
 {
   Matrix3d m3;
   Matrix4d m4;
@@ -110,5 +102,5 @@ EIGEN_DECLARE_TEST(commainitializer)
 
 
   // recursively test all block-sizes from 0 to 3:
-  test_block_recursion<8>::run();
+  test_block_recursion<(1<<8) - 1>();
 }

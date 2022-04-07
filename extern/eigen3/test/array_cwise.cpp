@@ -17,7 +17,7 @@ template<typename ArrayType> void array(const ArrayType& m)
   typedef Array<Scalar, 1, ArrayType::ColsAtCompileTime> RowVectorType;
 
   Index rows = m.rows();
-  Index cols = m.cols();
+  Index cols = m.cols(); 
 
   ArrayType m1 = ArrayType::Random(rows, cols),
              m2 = ArrayType::Random(rows, cols),
@@ -43,25 +43,25 @@ template<typename ArrayType> void array(const ArrayType& m)
   VERIFY_IS_APPROX(m3, m1 + s2);
   m3 = m1;
   m3 -= s1;
-  VERIFY_IS_APPROX(m3, m1 - s1);
-
+  VERIFY_IS_APPROX(m3, m1 - s1);  
+  
   // scalar operators via Maps
   m3 = m1;
   ArrayType::Map(m1.data(), m1.rows(), m1.cols()) -= ArrayType::Map(m2.data(), m2.rows(), m2.cols());
   VERIFY_IS_APPROX(m1, m3 - m2);
-
+  
   m3 = m1;
   ArrayType::Map(m1.data(), m1.rows(), m1.cols()) += ArrayType::Map(m2.data(), m2.rows(), m2.cols());
   VERIFY_IS_APPROX(m1, m3 + m2);
-
+  
   m3 = m1;
   ArrayType::Map(m1.data(), m1.rows(), m1.cols()) *= ArrayType::Map(m2.data(), m2.rows(), m2.cols());
   VERIFY_IS_APPROX(m1, m3 * m2);
-
+  
   m3 = m1;
   m2 = ArrayType::Random(rows,cols);
   m2 = (m2==0).select(1,m2);
-  ArrayType::Map(m1.data(), m1.rows(), m1.cols()) /= ArrayType::Map(m2.data(), m2.rows(), m2.cols());
+  ArrayType::Map(m1.data(), m1.rows(), m1.cols()) /= ArrayType::Map(m2.data(), m2.rows(), m2.cols());  
   VERIFY_IS_APPROX(m1, m3 / m2);
 
   // reductions
@@ -83,7 +83,7 @@ template<typename ArrayType> void array(const ArrayType& m)
   VERIFY_IS_APPROX(m3.rowwise() += rv1, m1.rowwise() + rv1);
   m3 = m1;
   VERIFY_IS_APPROX(m3.rowwise() -= rv1, m1.rowwise() - rv1);
-
+  
   // Conversion from scalar
   VERIFY_IS_APPROX((m3 = s1), ArrayType::Constant(rows,cols,s1));
   VERIFY_IS_APPROX((m3 = 1),  ArrayType::Constant(rows,cols,1));
@@ -92,31 +92,16 @@ template<typename ArrayType> void array(const ArrayType& m)
                 ArrayType::RowsAtCompileTime==Dynamic?2:ArrayType::RowsAtCompileTime,
                 ArrayType::ColsAtCompileTime==Dynamic?2:ArrayType::ColsAtCompileTime,
                 ArrayType::Options> FixedArrayType;
-  {
-    FixedArrayType f1(s1);
-    VERIFY_IS_APPROX(f1, FixedArrayType::Constant(s1));
-    FixedArrayType f2(numext::real(s1));
-    VERIFY_IS_APPROX(f2, FixedArrayType::Constant(numext::real(s1)));
-    FixedArrayType f3((int)100*numext::real(s1));
-    VERIFY_IS_APPROX(f3, FixedArrayType::Constant((int)100*numext::real(s1)));
-    f1.setRandom();
-    FixedArrayType f4(f1.data());
-    VERIFY_IS_APPROX(f4, f1);
-  }
-  #if EIGEN_HAS_CXX11
-  {
-    FixedArrayType f1{s1};
-    VERIFY_IS_APPROX(f1, FixedArrayType::Constant(s1));
-    FixedArrayType f2{numext::real(s1)};
-    VERIFY_IS_APPROX(f2, FixedArrayType::Constant(numext::real(s1)));
-    FixedArrayType f3{(int)100*numext::real(s1)};
-    VERIFY_IS_APPROX(f3, FixedArrayType::Constant((int)100*numext::real(s1)));
-    f1.setRandom();
-    FixedArrayType f4{f1.data()};
-    VERIFY_IS_APPROX(f4, f1);
-  }
-  #endif
-
+  FixedArrayType f1(s1);
+  VERIFY_IS_APPROX(f1, FixedArrayType::Constant(s1));
+  FixedArrayType f2(numext::real(s1));
+  VERIFY_IS_APPROX(f2, FixedArrayType::Constant(numext::real(s1)));
+  FixedArrayType f3((int)100*numext::real(s1));
+  VERIFY_IS_APPROX(f3, FixedArrayType::Constant((int)100*numext::real(s1)));
+  f1.setRandom();
+  FixedArrayType f4(f1.data());
+  VERIFY_IS_APPROX(f4, f1);
+  
   // pow
   VERIFY_IS_APPROX(m1.pow(2), m1.square());
   VERIFY_IS_APPROX(pow(m1,2), m1.square());
@@ -135,51 +120,10 @@ template<typename ArrayType> void array(const ArrayType& m)
 
   // Check possible conflicts with 1D ctor
   typedef Array<Scalar, Dynamic, 1> OneDArrayType;
-  {
-    OneDArrayType o1(rows);
-    VERIFY(o1.size()==rows);
-    OneDArrayType o2(static_cast<int>(rows));
-    VERIFY(o2.size()==rows);
-  }
-  #if EIGEN_HAS_CXX11
-  {
-    OneDArrayType o1{rows};
-    VERIFY(o1.size()==rows);
-    OneDArrayType o4{int(rows)};
-    VERIFY(o4.size()==rows);
-  }
-  #endif
-  // Check possible conflicts with 2D ctor
-  typedef Array<Scalar, Dynamic, Dynamic> TwoDArrayType;
-  typedef Array<Scalar, 2, 1> ArrayType2;
-  {
-    TwoDArrayType o1(rows,cols);
-    VERIFY(o1.rows()==rows);
-    VERIFY(o1.cols()==cols);
-    TwoDArrayType o2(static_cast<int>(rows),static_cast<int>(cols));
-    VERIFY(o2.rows()==rows);
-    VERIFY(o2.cols()==cols);
-
-    ArrayType2 o3(rows,cols);
-    VERIFY(o3(0)==Scalar(rows) && o3(1)==Scalar(cols));
-    ArrayType2 o4(static_cast<int>(rows),static_cast<int>(cols));
-    VERIFY(o4(0)==Scalar(rows) && o4(1)==Scalar(cols));
-  }
-  #if EIGEN_HAS_CXX11
-  {
-    TwoDArrayType o1{rows,cols};
-    VERIFY(o1.rows()==rows);
-    VERIFY(o1.cols()==cols);
-    TwoDArrayType o2{int(rows),int(cols)};
-    VERIFY(o2.rows()==rows);
-    VERIFY(o2.cols()==cols);
-
-    ArrayType2 o3{rows,cols};
-    VERIFY(o3(0)==Scalar(rows) && o3(1)==Scalar(cols));
-    ArrayType2 o4{int(rows),int(cols)};
-    VERIFY(o4(0)==Scalar(rows) && o4(1)==Scalar(cols));
-  }
-  #endif
+  OneDArrayType o1(rows);
+  VERIFY(o1.size()==rows);
+  OneDArrayType o4((int)rows);
+  VERIFY(o4.size()==rows);
 }
 
 template<typename ArrayType> void comparisons(const ArrayType& m)
@@ -198,7 +142,7 @@ template<typename ArrayType> void comparisons(const ArrayType& m)
             m2 = ArrayType::Random(rows, cols),
             m3(rows, cols),
             m4 = m1;
-
+  
   m4 = (m4.abs()==Scalar(0)).select(1,m4);
 
   VERIFY(((m1 + Scalar(1)) > m1).all());
@@ -251,7 +195,7 @@ template<typename ArrayType> void comparisons(const ArrayType& m)
   RealScalar a = m1.abs().mean();
   VERIFY( (m1<-a || m1>a).count() == (m1.abs()>a).count());
 
-  typedef Array<Index, Dynamic, 1> ArrayOfIndices;
+  typedef Array<typename ArrayType::Index, Dynamic, 1> ArrayOfIndices;
 
   // TODO allows colwise/rowwise for array
   VERIFY_IS_APPROX(((m1.abs()+1)>RealScalar(0.1)).colwise().count(), ArrayOfIndices::Constant(cols,rows).transpose());
@@ -287,16 +231,9 @@ template<typename ArrayType> void array_real(const ArrayType& m)
   VERIFY_IS_APPROX(m1.sinh(), sinh(m1));
   VERIFY_IS_APPROX(m1.cosh(), cosh(m1));
   VERIFY_IS_APPROX(m1.tanh(), tanh(m1));
-#if EIGEN_HAS_CXX11_MATH
-  VERIFY_IS_APPROX(m1.tanh().atanh(), atanh(tanh(m1)));
-  VERIFY_IS_APPROX(m1.sinh().asinh(), asinh(sinh(m1)));
-  VERIFY_IS_APPROX(m1.cosh().acosh(), acosh(cosh(m1)));
-#endif
-  VERIFY_IS_APPROX(m1.logistic(), logistic(m1));
 
   VERIFY_IS_APPROX(m1.arg(), arg(m1));
   VERIFY_IS_APPROX(m1.round(), round(m1));
-  VERIFY_IS_APPROX(m1.rint(), rint(m1));
   VERIFY_IS_APPROX(m1.floor(), floor(m1));
   VERIFY_IS_APPROX(m1.ceil(), ceil(m1));
   VERIFY((m1.isNaN() == (Eigen::isnan)(m1)).all());
@@ -309,7 +246,7 @@ template<typename ArrayType> void array_real(const ArrayType& m)
   VERIFY_IS_APPROX(m1.cube(), cube(m1));
   VERIFY_IS_APPROX(cos(m1+RealScalar(3)*m2), cos((m1+RealScalar(3)*m2).eval()));
   VERIFY_IS_APPROX(m1.sign(), sign(m1));
-  VERIFY((m1.sqrt().sign().isNaN() == (Eigen::isnan)(sign(sqrt(m1)))).all());
+
 
   // avoid NaNs with abs() so verification doesn't fail
   m3 = m1.abs();
@@ -329,21 +266,14 @@ template<typename ArrayType> void array_real(const ArrayType& m)
   VERIFY_IS_APPROX(sinh(m1), 0.5*(exp(m1)-exp(-m1)));
   VERIFY_IS_APPROX(cosh(m1), 0.5*(exp(m1)+exp(-m1)));
   VERIFY_IS_APPROX(tanh(m1), (0.5*(exp(m1)-exp(-m1)))/(0.5*(exp(m1)+exp(-m1))));
-  VERIFY_IS_APPROX(logistic(m1), (1.0/(1.0+exp(-m1))));
   VERIFY_IS_APPROX(arg(m1), ((m1<0).template cast<Scalar>())*std::acos(-1.0));
   VERIFY((round(m1) <= ceil(m1) && round(m1) >= floor(m1)).all());
-  VERIFY((rint(m1) <= ceil(m1) && rint(m1) >= floor(m1)).all());
-  VERIFY(((ceil(m1) - round(m1)) <= Scalar(0.5) || (round(m1) - floor(m1)) <= Scalar(0.5)).all());
-  VERIFY(((ceil(m1) - round(m1)) <= Scalar(1.0) && (round(m1) - floor(m1)) <= Scalar(1.0)).all());
-  VERIFY(((ceil(m1) - rint(m1)) <= Scalar(0.5) || (rint(m1) - floor(m1)) <= Scalar(0.5)).all());
-  VERIFY(((ceil(m1) - rint(m1)) <= Scalar(1.0) && (rint(m1) - floor(m1)) <= Scalar(1.0)).all());
   VERIFY((Eigen::isnan)((m1*0.0)/0.0).all());
   VERIFY((Eigen::isinf)(m4/0.0).all());
   VERIFY(((Eigen::isfinite)(m1) && (!(Eigen::isfinite)(m1*0.0/0.0)) && (!(Eigen::isfinite)(m4/0.0))).all());
   VERIFY_IS_APPROX(inverse(inverse(m1)),m1);
   VERIFY((abs(m1) == m1 || abs(m1) == -m1).all());
   VERIFY_IS_APPROX(m3, sqrt(abs2(m1)));
-  VERIFY_IS_APPROX(m1.absolute_difference(m2), (m1 > m2).select(m1 - m2, m2 - m1));
   VERIFY_IS_APPROX( m1.sign(), -(-m1).sign() );
   VERIFY_IS_APPROX( m1*m1.sign(),m1.abs());
   VERIFY_IS_APPROX(m1.sign() * m1.abs(), m1);
@@ -361,9 +291,6 @@ template<typename ArrayType> void array_real(const ArrayType& m)
   VERIFY_IS_APPROX(m1.exp() * m2.exp(), exp(m1+m2));
   VERIFY_IS_APPROX(m1.exp(), exp(m1));
   VERIFY_IS_APPROX(m1.exp() / m2.exp(),(m1-m2).exp());
-
-  VERIFY_IS_APPROX(m1.expm1(), expm1(m1));
-  VERIFY_IS_APPROX((m3 + smallNumber).exp() - 1, expm1(abs(m3) + smallNumber));
 
   VERIFY_IS_APPROX(m3.pow(RealScalar(0.5)), m3.sqrt());
   VERIFY_IS_APPROX(pow(m3,RealScalar(0.5)), m3.sqrt());
@@ -398,7 +325,7 @@ template<typename ArrayType> void array_complex(const ArrayType& m)
   ArrayType m1 = ArrayType::Random(rows, cols),
             m2(rows, cols),
             m4 = m1;
-
+  
   m4.real() = (m4.real().abs()==RealScalar(0)).select(RealScalar(1),m4.real());
   m4.imag() = (m4.imag().abs()==RealScalar(0)).select(RealScalar(1),m4.imag());
 
@@ -415,7 +342,6 @@ template<typename ArrayType> void array_complex(const ArrayType& m)
   VERIFY_IS_APPROX(m1.sinh(), sinh(m1));
   VERIFY_IS_APPROX(m1.cosh(), cosh(m1));
   VERIFY_IS_APPROX(m1.tanh(), tanh(m1));
-  VERIFY_IS_APPROX(m1.logistic(), logistic(m1));
   VERIFY_IS_APPROX(m1.arg(), arg(m1));
   VERIFY((m1.isNaN() == (Eigen::isnan)(m1)).all());
   VERIFY((m1.isInf() == (Eigen::isinf)(m1)).all());
@@ -436,15 +362,9 @@ template<typename ArrayType> void array_complex(const ArrayType& m)
   VERIFY_IS_APPROX(m1.exp(), exp(m1));
   VERIFY_IS_APPROX(m1.exp() / m2.exp(),(m1-m2).exp());
 
-  VERIFY_IS_APPROX(m1.expm1(), expm1(m1));
-  VERIFY_IS_APPROX(expm1(m1), exp(m1) - 1.);
-  // Check for larger magnitude complex numbers that expm1 matches exp - 1.
-  VERIFY_IS_APPROX(expm1(10. * m1), exp(10. * m1) - 1.);
-
   VERIFY_IS_APPROX(sinh(m1), 0.5*(exp(m1)-exp(-m1)));
   VERIFY_IS_APPROX(cosh(m1), 0.5*(exp(m1)+exp(-m1)));
   VERIFY_IS_APPROX(tanh(m1), (0.5*(exp(m1)-exp(-m1)))/(0.5*(exp(m1)+exp(-m1))));
-  VERIFY_IS_APPROX(logistic(m1), (1.0/(1.0 + exp(-m1))));
 
   for (Index i = 0; i < m.rows(); ++i)
     for (Index j = 0; j < m.cols(); ++j)
@@ -495,11 +415,7 @@ template<typename ArrayType> void array_complex(const ArrayType& m)
   VERIFY_IS_APPROX(m2, m1.transpose());
   m2.transposeInPlace();
   VERIFY_IS_APPROX(m2, m1);
-  // Check vectorized inplace transpose.
-  ArrayType m5 = ArrayType::Random(131, 131);
-  ArrayType m6 = m5;
-  m6.transposeInPlace();
-  VERIFY_IS_APPROX(m6, m5.transpose());
+
 }
 
 template<typename ArrayType> void min_max(const ArrayType& m)
@@ -530,7 +446,7 @@ template<typename ArrayType> void min_max(const ArrayType& m)
 
 }
 
-EIGEN_DECLARE_TEST(array_cwise)
+void test_array_cwise()
 {
   for(int i = 0; i < g_repeat; i++) {
     CALL_SUBTEST_1( array(Array<float, 1, 1>()) );
@@ -539,7 +455,6 @@ EIGEN_DECLARE_TEST(array_cwise)
     CALL_SUBTEST_4( array(ArrayXXcf(internal::random<int>(1,EIGEN_TEST_MAX_SIZE), internal::random<int>(1,EIGEN_TEST_MAX_SIZE))) );
     CALL_SUBTEST_5( array(ArrayXXf(internal::random<int>(1,EIGEN_TEST_MAX_SIZE), internal::random<int>(1,EIGEN_TEST_MAX_SIZE))) );
     CALL_SUBTEST_6( array(ArrayXXi(internal::random<int>(1,EIGEN_TEST_MAX_SIZE), internal::random<int>(1,EIGEN_TEST_MAX_SIZE))) );
-    CALL_SUBTEST_6( array(Array<Index,Dynamic,Dynamic>(internal::random<int>(1,EIGEN_TEST_MAX_SIZE), internal::random<int>(1,EIGEN_TEST_MAX_SIZE))) );
   }
   for(int i = 0; i < g_repeat; i++) {
     CALL_SUBTEST_1( comparisons(Array<float, 1, 1>()) );

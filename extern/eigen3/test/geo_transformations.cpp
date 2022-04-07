@@ -666,13 +666,9 @@ template<typename Scalar, int Mode, int Options> void transformations_no_scale()
   VERIFY((m3 * m3.inverse()).isIdentity(test_precision<Scalar>()));
   // Verify implicit last row is initialized.
   VERIFY_IS_APPROX(Vector4(m3.row(3)), Vector4(0.0, 0.0, 0.0, 1.0));
-
-  VERIFY_IS_APPROX(t3.rotation(), t3.linear());
-  if(Mode==Isometry)
-    VERIFY(t3.rotation().data()==t3.linear().data());
 }
 
-EIGEN_DECLARE_TEST(geo_transformations)
+void test_geo_transformations()
 {
   for(int i = 0; i < g_repeat; i++) {
     CALL_SUBTEST_1(( transformations<double,Affine,AutoAlign>() ));
