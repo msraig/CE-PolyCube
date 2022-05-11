@@ -56,6 +56,11 @@ Build the solution in .\Build folder, then you can find the generated executable
 
 We also provide the processed data **[here](https://drive.google.com/file/d/1g1RwWSkPRhl4HpcstE5hJALF3Zpq61pQ/view)**.
 
+### Update
+**2022.5.11** If you want to apply our algorithm on your own model, please firstly normalize the model so that it is within a bounding box of [0, 10]^3, and prepare the feature file as described above. If our algorithm fails to produce a valid PolyCube or hex mesh, here are some tips on parameter tuning:
++ If the initial PolyCube '*_deform_polycube.vtk' contains flipped/flattened tets, you can try to generate the polycube using PolyCut directly, with  '**.\Script\gen_hex_nodeform.bat**'.
++ For paramters in Line 32 of 'gen_hex.bat': 'bs' means how many edges are cut simultaneously, increasing 'bs' can sometimes improve hex quality; 'mr' means the mininum cut depth ratio, for models like 'fandisk', 'mr' needs to be set as 0.3 to ensure all non-feature edges are cut. However, if 'mr' is too small, the TetGen module might break down. 'sr' controls the size of hex element, larger value corresponds to larger hex. Decreasing 'sr' can sometimes help to generate a valid cut-enhanced PolyCube.
+
 ### Citation
 ```
 @article{Guo2020Cut,
