@@ -151,17 +151,17 @@ namespace ig
                         if (MidPoint[iAxis] <= center[iAxis]) //fSplit
                         {
                             //Store the verts to the left.
-                            leftSide.push_back(v[0]);
-                            leftSide.push_back(v[1]);
-                            leftSide_segment_id.push_back(segment_id_list[i / 2]);
+                            leftSide.emplace_back(v[0]);
+                            leftSide.emplace_back(v[1]);
+                            leftSide_segment_id.emplace_back(segment_id_list[i / 2]);
                             leftCount++;
                         }
                         else
                         {
                             //Store the verts to the right.
-                            rightSide.push_back(v[0]);
-                            rightSide.push_back(v[1]);
-                            rightSide_segment_id.push_back(segment_id_list[i / 2]);
+                            rightSide.emplace_back(v[0]);
+                            rightSide.emplace_back(v[1]);
+                            rightSide_segment_id.emplace_back(segment_id_list[i / 2]);
                             rightCount++;
                         }
 
@@ -192,15 +192,15 @@ namespace ig
                             if (i < leftMaxIndex)
                             {
                                 //left node
-                                leftSide.push_back(v[0]);
-                                leftSide.push_back(v[1]);
-                                leftSide_segment_id.push_back(segment_id_list[i / 2]);
+                                leftSide.emplace_back(v[0]);
+                                leftSide.emplace_back(v[1]);
+                                leftSide_segment_id.emplace_back(segment_id_list[i / 2]);
                             }
                             else
                             {
-                                rightSide.push_back(v[0]);
-                                rightSide.push_back(v[1]);
-                                rightSide_segment_id.push_back(segment_id_list[i / 2]);
+                                rightSide.emplace_back(v[0]);
+                                rightSide.emplace_back(v[1]);
+                                rightSide_segment_id.emplace_back(segment_id_list[i / 2]);
                             }
 
                             count = 0;
@@ -239,11 +239,11 @@ namespace ig
                 //Store the data directly if you want....
                 for (int i = 0; i < vertexList.size(); i++)
                 {
-                    m_pVerts.push_back(vertexList[i]);
+                    m_pVerts.emplace_back(vertexList[i]);
                 }
                 for (int i = 0; i < segment_id_list.size(); i++)
                 {
-                    segment_id.push_back(segment_id_list[i]);
+                    segment_id.emplace_back(segment_id_list[i]);
                 }
             }
         }
@@ -260,7 +260,7 @@ namespace ig
         std::vector<ptrdiff_t> segment_id_list;
         segment_id_list.reserve(vertices_list.size() / 2);
         for (int i = 0; i < vertices_list.size() / 2; i++)
-            segment_id_list.push_back(i);
+            segment_id_list.emplace_back(i);
         vertices_list_copy.assign(vertices_list.begin(), vertices_list.end());
         root = new aabb_impl::AABB_Segment_Tree_Node<T>(vertices_list, segment_id_list, treeInfo, 0);
         kdTree = 0;
@@ -271,10 +271,10 @@ namespace ig
             //sample some points
             for (int i = 0; i < vertices_list.size() / 2; i++)
             {
-                v_list.push_back(vertices_list[2 * i + rand() % 2]);
-				local_segment_id_list.push_back(i);
-                v_list.push_back((vertices_list[2 * i] + vertices_list[2 * i + 1]) / 2.0);
-				local_segment_id_list.push_back(i);
+                v_list.emplace_back(vertices_list[2 * i + rand() % 2]);
+				local_segment_id_list.emplace_back(i);
+                v_list.emplace_back((vertices_list[2 * i] + vertices_list[2 * i + 1]) / 2.0);
+				local_segment_id_list.emplace_back(i);
             }
             kdTree = new KD_Tree<T, 3>(v_list, local_segment_id_list);
         }
@@ -459,6 +459,15 @@ namespace ig
             }
             *segment_id = global_Segment_id;
         }
+
+        // if (vertices_list_copy.size() == 2)
+        {
+            auto dir = vertices_list_copy[2*global_Segment_id+1] - vertices_list_copy[2*global_Segment_id];
+            auto len = dir.Normalize();
+            auto shift = std::max((Real)0, std::min(len, (p - vertices_list_copy[2*global_Segment_id]).Dot(dir)));
+            nearestP = vertices_list_copy[2*global_Segment_id] + shift * dir;
+        }
+
        // return global_min_dist;
     }
     //////////////////////////////////////////////////////////////

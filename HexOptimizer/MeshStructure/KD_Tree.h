@@ -1,13 +1,15 @@
 #pragma once
 
 #include "TinyVector.h"
-#include<vector>
-#include<cassert>
+#include <vector>
+#include <cassert>
+#include <omp.h>
+
 
 namespace ig
 {
 	/****************************************************************************
-	This class KD_Tree is for 3d data nearest point query.
+	This class KD_Tree is for nd data nearest point query.
 
 	There is two constructors for KD_TREE.
 

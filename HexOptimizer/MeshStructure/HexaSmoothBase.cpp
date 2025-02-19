@@ -523,20 +523,20 @@ namespace MeshLib
 							{
 								if (tag == 0)
 								{
-									//corner_projection(surf_id, tmpV, tmpV);
+									corner_projection(surf_id, tmpV, tmpV);
 								}
 								else if (tag == 1)
 								{
-									//if (m_quadmesh->get_vertex(surf_id)->degree == 4)
-									//	feature_projection(surf_id, tmpV, tmpV);
+									// if (m_quadmesh->get_vertex(surf_id)->degree == 4)
+										feature_projection(surf_id, tmpV, tmpV);
 								}
 								else
 								{
-									//m_aabb->find_Nearest_Point(tmpV, tmpV);
+									m_aabb->find_Nearest_Point(tmpV, tmpV);
 								}
 							}
-							else
-								;// m_aabb->find_Nearest_Point(tmpV, tmpV);
+							// else
+							// 	m_aabb->find_Nearest_Point(tmpV, tmpV);
 						}
 
 						bool new_flip;
@@ -578,6 +578,46 @@ namespace MeshLib
 				global_iter = 0; resolve++;
 			}
 		} while (global_iter < max_iter);
+
+
+// 		for (size_t color = 0; color < colored_vertices.size(); color++)
+// 		{
+// #pragma omp parallel for schedule(dynamic)
+// 			for (ptrdiff_t vi = 0; vi < (ptrdiff_t)colored_vertices[color].size(); vi++)
+// 			{
+// 				size_t id = colored_vertices[color][vi];
+
+// 				if (fixboundary && boundaryvertexlabel[id]) continue;
+
+// 				OptData<Real> opt;
+// 				int tag = -1; ptrdiff_t surf_id = -1;
+// 				if (boundaryvertexlabel[id])
+// 				{
+// 					surf_id = vert_map_ids[id];
+// 					tag = vertex_feature_tags[surf_id];
+
+// 					if (feature_sensitive)
+// 					{
+// 						if (tag == 0)
+// 						{
+// 							// corner_projection(surf_id, tmpV, tmpV);
+// 						}
+// 						else if (tag == 1)
+// 						{
+// 							// if (m_quadmesh->get_vertex(surf_id)->degree == 4)
+// 							// 	feature_projection(surf_id, tmpV, tmpV);
+// 						}
+// 						else
+// 						{
+// 							m_aabb->find_Nearest_Point(vertices[id], vertices[id]);
+// 						}
+// 					}
+// 							// else
+// 							// 	m_aabb->find_Nearest_Point(tmpV, tmpV);
+// 				}
+// 			}
+// 		}
+
 
 		if (verbose)
 			std::cout << "done!" << std::endl;

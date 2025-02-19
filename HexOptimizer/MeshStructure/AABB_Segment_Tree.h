@@ -1,5 +1,6 @@
 #pragma once
 #include "AABB_Tree.h"
+#include <algorithm>
 
 /*
  Notes in AABB_Tree.h
